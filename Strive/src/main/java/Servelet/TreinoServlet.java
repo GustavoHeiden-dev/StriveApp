@@ -28,7 +28,7 @@ public class TreinoServlet extends HttpServlet {
             resp.sendRedirect("login.jsp");
             return;
         }
-
+       
         // CORREÇÃO: Chama o método que filtra por usuário
         List<Treino> treinosDoUsuario = treinoDao.listarPorUsuario(usuario.getId());
         req.setAttribute("treinos", treinosDoUsuario);

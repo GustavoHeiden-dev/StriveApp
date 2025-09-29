@@ -7,16 +7,15 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import Modelos.Treino;
+import Modelos.Usuario;
 import Utils.ConexaoDB;
 
 public class TreinoDAO {
 
-    /**
-     * MÉTODO CORRIGIDO: Busca apenas os treinos de um usuário específico.
-     */
+    // --- SEUS MÉTODOS listarPorUsuario() e salvar() CONTINUAM AQUI (sem alterações) ---
+
     public List<Treino> listarPorUsuario(int idUsuario) {
         List<Treino> lista = new ArrayList<>();
-        // A cláusula WHERE id_usuario = ? é a chave para a correção.
         String sql = "SELECT id_treino, nome, descricao, nivel, id_usuario FROM Treino WHERE id_usuario = ?";
         try (Connection con = ConexaoDB.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
@@ -39,9 +38,6 @@ public class TreinoDAO {
         return lista;
     }
 	  
-    /**
-     * Salva o treino e suas associações com exercícios.
-     */
     public boolean salvar(Treino treino, String[] exerciciosIds) {
         String sqlTreino = "INSERT INTO Treino (nome, descricao, nivel, id_usuario) VALUES (?, ?, ?, ?)";
         String sqlTreinoExercicio = "INSERT INTO TreinoExercicio (id_treino, id_exercicio) VALUES (?, ?)";
@@ -100,5 +96,86 @@ public class TreinoDAO {
                 }
             }
         }
+    }
+    
+    // --- MÉTODO MODIFICADO PARA CRIAR TREINOS A, B e C ---
+    public void criarTreinoPadraoParaUsuario(Usuario usuario) {
+        if (usuario == null || usuario.getNivelInicial() == null) {
+            return;
+        }
+
+        Treino treinoA = new Treino();
+        Treino treinoB = new Treino();
+        Treino treinoC = new Treino();
+        String[] idsExerciciosA, idsExerciciosB, idsExerciciosC;
+
+        String nivel = usuario.getNivelInicial().toLowerCase();
+        
+        treinoA.setIdUsuario(usuario.getId());
+        treinoA.setNivel(usuario.getNivelInicial());
+        treinoB.setIdUsuario(usuario.getId());
+        treinoB.setNivel(usuario.getNivelInicial());
+        treinoC.setIdUsuario(usuario.getId());
+        treinoC.setNivel(usuario.getNivelInicial());
+        
+        switch (nivel) {
+            case "iniciante":
+              
+                treinoA.setNome(" A - Peito, Ombro, Tríceps");
+                treinoA.setDescricao("Foco em exercícios básicos para fortalecimento superior.");
+                idsExerciciosA = new String[]{"1", "7", "10"}; 
+
+               
+                treinoB.setNome(" B - Costas e Bíceps");
+                treinoB.setDescricao("Foco em puxadas para fortalecimento das costas.");
+                idsExerciciosB = new String[]{"4", "8"}; 
+              
+                treinoC.setNome(" C - Pernas");
+                treinoC.setDescricao("Fortalecimento completo dos membros inferiores.");
+                idsExerciciosC = new String[]{"13", "14", "16"}; 
+
+                break;
+
+            case "intermediario":
+              
+                treinoA.setNome(" A - Peito, Ombro, Tríceps");
+                treinoA.setDescricao("Maior volume e intensidade para peitoral, ombros e tríceps.");
+                idsExerciciosA = new String[]{"2", "6", "11", "18"}; 
+             
+                treinoB.setNome(" B - Costas e Bíceps");
+                treinoB.setDescricao("Exercícios compostos para densidade e largura das costas.");
+                idsExerciciosB = new String[]{"3", "5", "9"}; 
+                treinoC.setNome(" C - Pernas");
+                treinoC.setDescricao("Foco em exercícios livres para máxima hipertrofia.");
+                idsExerciciosC = new String[]{"12", "15", "17"};
+
+                break;
+                
+            case "avançado":
+                
+                treinoA.setNome(" A - Push");
+                treinoA.setDescricao("Treino de força e hipertrofia para peito, ombro e tríceps.");
+                idsExerciciosA = new String[]{"1", "2", "6", "11", "18"}; // Supino Reto, Supino Inclinado, Desenv. Militar, Tríceps Testa, Elevação Lateral
+
+             
+                treinoB.setNome(" B - Pull");
+                treinoB.setDescricao("Treino completo de costas e bíceps com alta intensidade.");
+                idsExerciciosB = new String[]{"5", "3", "20", "8", "9"}; // Barra Fixa, Remada Curvada, Remada Cavalinho, Rosca Direta, Rosca Martelo
+
+                
+                treinoC.setNome(" C - Pernas");
+                treinoC.setDescricao("Volume e intensidade máximos para desenvolvimento completo das pernas.");
+                idsExerciciosC = new String[]{"12", "13", "15", "17", "16"}; // Agachamento Livre, Leg Press, Stiff, Cadeira Flexora, Panturrilha
+                
+                break;
+
+            default:
+                return;
+        }
+
+        
+        salvar(treinoA, idsExerciciosA);
+        salvar(treinoB, idsExerciciosB);
+        salvar(treinoC, idsExerciciosC);
     }
 }
