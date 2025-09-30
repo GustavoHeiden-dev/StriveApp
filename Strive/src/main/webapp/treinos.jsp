@@ -84,8 +84,54 @@
             margin-left: 1rem;
             transition: color 0.2s;
         }
+<<<<<<< Updated upstream
         .remove-exercise-btn:hover {
             color: #d9534f;
+=======
+        .bottom-nav a.active,
+        .bottom-nav a:hover {
+            color: var(--primary-color);
+        }
+        /* Estilos do SweetAlert2 para garantir a gamificação */
+        .swal2-title {
+            font-weight: 700 !important;
+            font-size: 2.5em !important;
+            color: #4CAF50 !important; /* Cor verde para o título de sucesso */
+        }
+        .swal2-html-container {
+            font-size: 1.2em !important;
+            color: #333 !important;
+        }
+        .swal2-icon.swal2-success [class^='swal2-success-line'] {
+            background-color: #4CAF50 !important; /* Linhas do ícone de sucesso verdes */
+        }
+        .swal2-icon.swal2-success .swal2-success-ring {
+            border-color: #4CAF50 !important; /* Anel do ícone de sucesso verde */
+        }
+        .swal2-confirm.swal2-styled {
+            background-color: #4CAF50 !important; /* Botão de confirmação verde */
+            color: #fff !important;
+        }
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1.5rem;
+                padding-bottom: 100px;
+            }
+            .main-header h1 {
+                font-size: 2rem;
+            }
+        }
+        @media (min-width: 992px) {
+            .sidebar {
+                display: block;
+            }
+            .main-content {
+                margin-left: var(--sidebar-width);
+            }
+            .bottom-nav {
+                display: none;
+            }
+>>>>>>> Stashed changes
         }
         .treinos-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
         .treino-card { background: var(--bg-card); border-radius: var(--border-radius); box-shadow: var(--shadow); display: flex; flex-direction: column; transition: transform 0.3s; }
@@ -221,12 +267,153 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let selectedExercises = new Map();
 
+<<<<<<< Updated upstream
     function openModal() {
         exerciseListItems.forEach(item => {
             const id = item.dataset.id;
             const checkbox = item.querySelector('input[type="checkbox"]');
             checkbox.checked = selectedExercises.has(id);
             item.classList.toggle('selected', checkbox.checked);
+=======
+            function openModal() {
+                exerciseListItems.forEach(item => {
+                    const id = item.dataset.id;
+                    const checkbox = item.querySelector('input[type="checkbox"]');
+                    checkbox.checked = selectedExercises.has(id);
+                    item.classList.toggle('selected', checkbox.checked);
+                });
+                modalOverlay.classList.add('active');
+            }
+
+            function closeModal() {
+                modalOverlay.classList.remove('active');
+            }
+
+            function updateSelectedDisplay() {
+                selectedContainer.innerHTML = '';
+                hiddenInputsContainer.innerHTML = '';
+                const list = document.createElement('ul');
+                list.className = 'selected-exercises-list';
+
+                if (selectedExercises.size === 0) {
+                    list.innerHTML = '<li>Nenhum exercício selecionado.</li>';
+                } else {
+                    selectedExercises.forEach((name, id) => {
+                        const listItem = document.createElement('li');
+                        listItem.className = 'selected-exercise-item';
+                        listItem.textContent = name;
+                        list.appendChild(listItem);
+
+                        const hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = 'exercicios';
+                        hiddenInput.value = id;
+                        hiddenInputsContainer.appendChild(hiddenInput);
+                    });
+                }
+                selectedContainer.appendChild(list);
+            }
+
+            openModalBtn.addEventListener('click', openModal);
+            closeModalBtn.addEventListener('click', closeModal);
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) closeModal();
+            });
+
+            confirmSelectionBtn.addEventListener('click', () => {
+                selectedExercises.clear();
+                exerciseListItems.forEach(item => {
+                    const checkbox = item.querySelector('input[type="checkbox"]');
+                    if (checkbox.checked) {
+                        selectedExercises.set(item.dataset.id, item.dataset.name);
+                    }
+                });
+                updateSelectedDisplay();
+                closeModal();
+            });
+
+            exerciseListItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const checkbox = item.querySelector('input[type="checkbox"]');
+                    if (e.target.tagName !== 'INPUT') {
+                        checkbox.checked = !checkbox.checked;
+                    }
+                    item.classList.toggle('selected', checkbox.checked);
+                });
+            });
+
+            searchInput.addEventListener('keyup', () => {
+                const filter = searchInput.value.toLowerCase();
+                exerciseListItems.forEach(item => {
+                    const name = item.dataset.name.toLowerCase();
+                    item.style.display = name.includes(filter) ? 'flex' : 'none';
+                });
+            });
+
+            <% if (treinoFinalizado) { %>
+                function fireConfetti() {
+                    const duration = 3 * 1000;
+                    const animationEnd = Date.now() + duration;
+                    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1050 };
+
+                    function randomInRange(min, max) {
+                        return Math.random() * (max - min) + min;
+                    }
+
+                    const interval = setInterval(function() {
+                        const timeLeft = animationEnd - Date.now();
+                        if (timeLeft <= 0) {
+                            return clearInterval(interval);
+                        }
+                        const particleCount = 50 * (timeLeft / duration);
+                        // Lança confetes da esquerda
+                        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                        // Lança confetes da direita
+                        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+                    }, 250);
+                }
+
+                function fireBalloons() {
+                    const end = Date.now() + (2 * 1000);
+                    const colors = ['#6a0dad', '#8A2BE2', '#4CAF50']; // Adicionei um verde vibrante aqui
+
+                    (function frame() {
+                        confetti({
+                            particleCount: 2,
+                            angle: 60,
+                            spread: 55,
+                            origin: { x: 0, y: 0.8 },
+                            colors: colors,
+                            shapes: ['circle', 'square'] // Balões podem ter formas diferentes
+                        });
+                        confetti({
+                            particleCount: 2,
+                            angle: 120,
+                            spread: 55,
+                            origin: { x: 1, y: 0.8 },
+                            colors: colors,
+                            shapes: ['circle', 'square']
+                        });
+
+                        if (Date.now() < end) {
+                            requestAnimationFrame(frame);
+                        }
+                    }());
+                }
+
+                Swal.fire({
+                    title: 'Parabéns!',
+                    text: 'Treino finalizado com sucesso. Você é imparável!',
+                    icon: 'success', // Ícone de "check" verde do SweetAlert
+                    confirmButtonText: 'Missão Cumprida!',
+                    confirmButtonColor: '#4CAF50', // Botão de confirmação verde
+                    willOpen: () => {
+                        fireConfetti();
+                        fireBalloons();
+                    }
+                });
+            <% } %>
+>>>>>>> Stashed changes
         });
         modalOverlay.classList.add('active');
     }
