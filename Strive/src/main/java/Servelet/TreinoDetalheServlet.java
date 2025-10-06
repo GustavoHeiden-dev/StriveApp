@@ -6,14 +6,19 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import Dao.ExercicioDAO;
+import Dao.TreinoDAO;
 import Dao.TreinoSessaoDAO;
 import Modelos.Exercicio;
+import Modelos.Treino;
 import Modelos.Usuario;
 
 @WebServlet("/TreinoDetalheServlet")
 public class TreinoDetalheServlet extends HttpServlet {
+    private TreinoDAO treinoDao = new TreinoDAO();
+    private TreinoSessaoDAO treinoSessaoDao = new TreinoSessaoDAO();
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+            throws ServletException, IOException {
         
         HttpSession session = request.getSession();
         Usuario usuario = (Usuario) session.getAttribute("usuario");
@@ -29,21 +34,25 @@ public class TreinoDetalheServlet extends HttpServlet {
             return;
         }
         
-        int idTreino = Integer.parseInt(idTreinoStr);
+        try {
+            int idTreino = Integer.parseInt(idTreinoStr);
 
-        // 1. Inicia uma nova sessão de treino e pega o ID.
-        TreinoSessaoDAO sessaoDao = new TreinoSessaoDAO();
-        int idSessao = sessaoDao.iniciarSessao(usuario.getId(), idTreino);
+            Treino treino = treinoDao.buscarPorId(idTreino);
+            
+            if (treino != null) {
+                int idSessao = treinoSessaoDao.iniciarSessao(usuario.getId(), idTreino);
 
-        // 2. Busca os exercícios do treino.
-        ExercicioDAO exercicioDao = new ExercicioDAO();
-        List<Exercicio> exercicios = exercicioDao.listarPorTreino(idTreino);
-        
-        // 3. Envia todos os dados necessários para o JSP.
-        request.setAttribute("exercicios", exercicios);
-        request.setAttribute("idTreino", idTreino);
-        request.setAttribute("idSessao", idSessao); // Esta linha é a correção crucial.
-        
-        request.getRequestDispatcher("treinoDetalhe.jsp").forward(request, response);
+                request.setAttribute("exercicios", treino.getExercicios());
+                request.setAttribute("idTreino", treino.getId());
+                request.setAttribute("idSessao", idSessao);
+                
+                request.getRequestDispatcher("treinoDetalhe.jsp").forward(request, response);
+            } else {
+                response.sendRedirect("TreinoServlet");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect("TreinoServlet");
+        }
     }
 }

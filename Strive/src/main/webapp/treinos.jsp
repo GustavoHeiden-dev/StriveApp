@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8"%>
-<%@ page import="Modelos.Usuario, java.util.List, Modelos.Treino, Modelos.Exercicio"%>
+<%@ page import="Modelos.Usuario, java.util.List, Modelos.Treino, Modelos.Exercicio, java.util.stream.Collectors"%>
 <%
     Usuario usuario = (Usuario) session.getAttribute("usuario");
     if (usuario == null) {
@@ -187,6 +187,7 @@
             justify-content: center;
             z-index: 1000;
             backdrop-filter: blur(5px);
+            padding: 1rem;
         }
         .modal-overlay.active {
             display: flex;
@@ -195,8 +196,8 @@
             background: var(--bg-card);
             border-radius: var(--border-radius);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            width: 90%;
-            max-width: 700px;
+            width: 100%;
+            max-width: 500px;
             max-height: 90vh;
             display: flex;
             flex-direction: column;
@@ -265,9 +266,24 @@
             min-height: 40px;
         }
         .selected-exercise-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             padding: 0.5rem 0;
             color: var(--text-dark);
             font-weight: 500;
+        }
+        .remove-exercise-btn {
+            background: none;
+            border: none;
+            color: #ccc;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color 0.3s, transform 0.2s;
+        }
+        .remove-exercise-btn:hover {
+            color: #ff4d4d;
+            transform: scale(1.2);
         }
         .treinos-grid {
             display: grid;
@@ -281,6 +297,7 @@
             display: flex;
             flex-direction: column;
             transition: transform 0.3s;
+            position: relative;
         }
         .treino-card:hover {
             transform: translateY(-5px);
@@ -291,10 +308,27 @@
             display: flex;
             flex-direction: column;
         }
-        .treino-card h3 {
+        .treino-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .treino-card-header h3 {
             margin-top: 0;
             color: var(--primary-color);
             font-size: 1.3rem;
+            margin-right: 10px;
+        }
+        .edit-treino-btn {
+            background: none;
+            border: none;
+            font-size: 1rem;
+            color: #ccc;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .edit-treino-btn:hover {
+            color: var(--primary-color);
         }
         .treino-card p {
             color: var(--text-muted);
@@ -334,11 +368,18 @@
         }
         @media (max-width: 768px) {
             .main-content {
-                padding: 1.5rem;
+                padding: 1rem;
                 padding-bottom: 100px;
             }
             .main-header h1 {
                 font-size: 2rem;
+            }
+            .modal {
+                width: 95%;
+                max-height: 85vh;
+            }
+            .modal-header h3 {
+                font-size: 1.2rem;
             }
         }
         @media (min-width: 992px) {
@@ -372,10 +413,11 @@
                 <p>Explore os treinos disponíveis ou crie uma nova rotina personalizada.</p>
             </header>
 
-            <section class="card">
-                <h2>Criar Novo Treino</h2>
+            <section id="formCard" class="card">
+                <h2 id="formTitle">Criar Novo Treino</h2>
                 <form id="createTreinoForm" action="TreinoServlet" method="post">
                     <input type="hidden" name="acao" value="criar">
+                    <input type="hidden" name="idTreino" value="">
                     <div class="form-group">
                         <label for="nome">Nome do Treino</label>
                         <input type="text" id="nome" name="nome" placeholder="Ex: Treino A" required>
@@ -388,7 +430,7 @@
                             </ul>
                         </div>
                         <button type="button" id="openModalBtn" class="btn btn-outline" style="margin-top: 1rem;">
-                            <i class="fas fa-plus"></i> Adicionar Exercícios
+                            <i class="fas fa-plus"></i> Adicionar / Editar Exercícios
                         </button>
                     </div>
                     <div id="hidden-inputs-container"></div>
@@ -399,16 +441,31 @@
             <section class="card">
                 <h2>Treinos Disponíveis</h2>
                 <div class="treinos-grid">
-                    <% if (treinos != null && !treinos.isEmpty()) { %>
-                        <% for (Treino t : treinos) { %>
-                            <div class="treino-card">
-                                <div class="treino-card-content">
+                    <% if (treinos != null && !treinos.isEmpty()) {
+                        for (Treino t : treinos) {
+                            String exerciciosIds = "";
+                            if (t.getExercicios() != null) {
+                                exerciciosIds = t.getExercicios().stream()
+                                                    .map(e -> String.valueOf(e.getId()))
+                                                    .collect(Collectors.joining(","));
+                            }
+                    %>
+                        <div class="treino-card">
+                            <div class="treino-card-content">
+                                <div class="treino-card-header">
                                     <h3><%= t.getNome() %></h3>
-                                    <p>Acesse para ver os detalhes e iniciar.</p>
-                                    <a href="TreinoDetalheServlet?idTreino=<%= t.getId() %>" class="btn">Iniciar Treino</a>
+                                    <button type="button" class="edit-treino-btn"
+                                        data-treino-id="<%= t.getId() %>"
+                                        data-treino-nome="<%= t.getNome() %>"
+                                        data-exercicios-ids="<%= exerciciosIds %>">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </button>
                                 </div>
+                                <p>Acesse para ver os detalhes e iniciar.</p>
+                                <a href="TreinoDetalheServlet?idTreino=<%= t.getId() %>" class="btn">Iniciar Treino</a>
                             </div>
-                        <% } %>
+                        </div>
+                    <% } %>
                     <% } else { %>
                         <p>Você ainda não possui treinos cadastrados. Crie um acima!</p>
                     <% } %>
@@ -465,6 +522,13 @@
             const exerciseListItems = modalOverlay.querySelectorAll('.modal-exercicio-list li');
             const selectedContainer = document.getElementById('selectedExercisesContainer');
             const hiddenInputsContainer = document.getElementById('hidden-inputs-container');
+            
+            const formCard = document.getElementById('formCard');
+            const formTitle = document.getElementById('formTitle');
+            const createTreinoForm = document.getElementById('createTreinoForm');
+            const acaoInput = createTreinoForm.querySelector('input[name="acao"]');
+            const idTreinoInput = createTreinoForm.querySelector('input[name="idTreino"]');
+            const nomeTreinoInput = createTreinoForm.querySelector('input[name="nome"]');
 
             let selectedExercises = new Map();
 
@@ -494,7 +558,24 @@
                     selectedExercises.forEach((name, id) => {
                         const listItem = document.createElement('li');
                         listItem.className = 'selected-exercise-item';
-                        listItem.textContent = name;
+                        
+                        const textNode = document.createTextNode(name + ' ');
+                        listItem.appendChild(textNode);
+
+                        const removeBtn = document.createElement('button');
+                        removeBtn.className = 'remove-exercise-btn';
+                        removeBtn.innerHTML = '&times;';
+                        removeBtn.dataset.id = id;
+                        removeBtn.type = 'button';
+
+                        removeBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const exerciseIdToRemove = e.target.dataset.id;
+                            selectedExercises.delete(exerciseIdToRemove);
+                            updateSelectedDisplay();
+                        });
+
+                        listItem.appendChild(removeBtn);
                         list.appendChild(listItem);
 
                         const hiddenInput = document.createElement('input');
@@ -514,11 +595,14 @@
             });
 
             confirmSelectionBtn.addEventListener('click', () => {
-                selectedExercises.clear();
                 exerciseListItems.forEach(item => {
                     const checkbox = item.querySelector('input[type="checkbox"]');
+                    const exerciseId = item.dataset.id;
+                    const exerciseName = item.dataset.name;
                     if (checkbox.checked) {
-                        selectedExercises.set(item.dataset.id, item.dataset.name);
+                        selectedExercises.set(exerciseId, exerciseName);
+                    } else {
+                        selectedExercises.delete(exerciseId);
                     }
                 });
                 updateSelectedDisplay();
@@ -542,25 +626,94 @@
                     item.style.display = name.includes(filter) ? 'flex' : 'none';
                 });
             });
+            
+            document.querySelectorAll('.edit-treino-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const btn = e.currentTarget;
+                    const treinoId = btn.dataset.treinoId;
+                    const treinoNome = btn.dataset.treinoNome;
+                    const exerciciosIds = btn.dataset.exerciciosIds ? btn.dataset.exerciciosIds.split(',') : [];
 
-            <% if (treinoFinalizado) { %>
-                const SwalWithConfetti = Swal.mixin({
-                    didOpen: () => {
-                        confetti({
-                            particleCount: 100,
-                            spread: 70,
-                            origin: { y: 0.6 },
-                            zIndex: 1050
+                    formTitle.textContent = 'Editar Treino: ' + treinoNome;
+                    acaoInput.value = 'atualizar';
+                    idTreinoInput.value = treinoId;
+                    nomeTreinoInput.value = treinoNome;
+
+                    selectedExercises.clear();
+                    if (exerciciosIds.length > 0 && exerciciosIds[0] !== '') {
+                        exerciciosIds.forEach(id => {
+                            const listItem = document.querySelector(`.modal-exercicio-list li[data-id='${id}']`);
+                            if (listItem) {
+                                selectedExercises.set(id, listItem.dataset.name);
+                            }
                         });
                     }
+                    
+                    updateSelectedDisplay();
+                    openModal();
+                    formCard.scrollIntoView({ behavior: 'smooth' });
                 });
+            });
 
-                SwalWithConfetti.fire({
+            <% if (treinoFinalizado) { %>
+                function fireConfetti() {
+                    const duration = 3 * 1000;
+                    const animationEnd = Date.now() + duration;
+                    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1050 };
+
+                    function randomInRange(min, max) {
+                        return Math.random() * (max - min) + min;
+                    }
+
+                    const interval = setInterval(function() {
+                        const timeLeft = animationEnd - Date.now();
+                        if (timeLeft <= 0) {
+                            return clearInterval(interval);
+                        }
+                        const particleCount = 50 * (timeLeft / duration);
+                        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+                    }, 250);
+                }
+
+                function fireBalloons() {
+                    const end = Date.now() + (2 * 1000);
+                    const colors = ['#6a0dad', '#8A2BE2', '#4CAF50'];
+
+                    (function frame() {
+                        confetti({
+                            particleCount: 2,
+                            angle: 60,
+                            spread: 55,
+                            origin: { x: 0, y: 0.8 },
+                            colors: colors,
+                            shapes: ['circle', 'square']
+                        });
+                        confetti({
+                            particleCount: 2,
+                            angle: 120,
+                            spread: 55,
+                            origin: { x: 1, y: 0.8 },
+                            colors: colors,
+                            shapes: ['circle', 'square']
+                        });
+
+                        if (Date.now() < end) {
+                            requestAnimationFrame(frame);
+                        }
+                    }());
+                }
+
+                Swal.fire({
                     title: 'Parabéns!',
-                    text: 'Você finalizou seu treino com sucesso. Continue com o ótimo trabalho!',
+                    text: 'Treino finalizado com sucesso. Você é imparável!',
                     icon: 'success',
-                    confirmButtonText: 'Que demais!',
-                    confirmButtonColor: '#6a0dad'
+                    confirmButtonText: 'Missão Cumprida!',
+                    confirmButtonColor: '#4CAF50',
+                    willOpen: () => {
+                        fireConfetti();
+                        fireBalloons();
+                    }
                 });
             <% } %>
         });
