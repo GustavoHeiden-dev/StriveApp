@@ -1,71 +1,74 @@
 package Modelos;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Exercicio {
-	private int id;
-    private int idTreino;
+    private int id;
     private String nome;
     private String grupoMuscular;
     private String repeticoes;
     private Float peso;
     private String descricao;
+    private List<Serie> series;
 
-    public Exercicio() {}
+    public Exercicio() {
+        this.series = new ArrayList<>();
+    }
 
-	public int getId() {
-		return id;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public int getIdTreino() {
-		return idTreino;
-	}
+    public String getNome() {
+        return nome;
+    }
 
-	public void setIdTreino(int idTreino) {
-		this.idTreino = idTreino;
-	}
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
-	public String getNome() {
-		return nome;
-	}
+    public String getGrupoMuscular() {
+        return grupoMuscular;
+    }
 
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
+    public void setGrupoMuscular(String grupoMuscular) {
+        this.grupoMuscular = grupoMuscular;
+    }
 
-	public String getGrupoMuscular() {
-		return grupoMuscular;
-	}
+    public String getRepeticoes() {
+        return repeticoes;
+    }
 
-	public void setGrupoMuscular(String grupoMuscular) {
-		this.grupoMuscular = grupoMuscular;
-	}
+    public void setRepeticoes(String repeticoes) {
+        this.repeticoes = repeticoes;
+    }
 
-	public String getRepeticoes() {
-		return repeticoes;
-	}
+    public Float getPeso() {
+        return peso;
+    }
 
-	public void setRepeticoes(String repeticoes) {
-		this.repeticoes = repeticoes;
-	}
+    public void setPeso(Float peso) {
+        this.peso = peso;
+    }
 
-	public Float getPeso() {
-		return peso;
-	}
+    public String getDescricao() {
+        return descricao;
+    }
 
-	public void setPeso(Float peso) {
-		this.peso = peso;
-	}
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
 
-	public String getDescricao() {
-		return descricao;
-	}
+    public List<Serie> getSeries() {
+        return series;
+    }
 
-	public void setDescricao(String descricao) {
-		this.descricao = descricao;
-	}
-    
-    
+    public void setSeries(List<Serie> series) {
+        this.series = series;
+    }
 }

@@ -29,7 +29,6 @@ public class TreinoServlet extends HttpServlet {
             return;
         }
        
-        // CORREÇÃO: Chama o método que filtra por usuário
         List<Treino> treinosDoUsuario = treinoDao.listarPorUsuario(usuario.getId());
         req.setAttribute("treinos", treinosDoUsuario);
         
@@ -41,29 +40,29 @@ public class TreinoServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        HttpSession session = req.getSession();
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+        if (usuario == null) {
+            resp.sendRedirect("login.jsp");
+            return;
+        }
+
         String acao = req.getParameter("acao");
+        String nomeTreino = req.getParameter("nome");
+        String[] exerciciosIds = req.getParameterValues("exercicios");
+
         if ("criar".equals(acao)) {
-            HttpSession session = req.getSession();
-            Usuario usuario = (Usuario) session.getAttribute("usuario");
-
-            if (usuario == null) {
-                resp.sendRedirect("login.jsp");
-                return;
-            }
-
             Treino t = new Treino();
-            t.setNome(req.getParameter("nome"));
-            t.setDescricao(req.getParameter("descricao"));
-            t.setNivel(req.getParameter("nivel"));
-            // Garante que o treino seja salvo com o ID do usuário logado
+            t.setNome(nomeTreino);
             t.setIdUsuario(usuario.getId());
-
-            String[] exerciciosIds = req.getParameterValues("exercicios");
-
             treinoDao.salvar(t, exerciciosIds);
+
+        } else if ("atualizar".equals(acao)) {
+            int idTreino = Integer.parseInt(req.getParameter("idTreino"));
+            treinoDao.atualizar(idTreino, nomeTreino, exerciciosIds);
         }
         
-        // Redireciona para o doGet para recarregar a página com os dados atualizados
         resp.sendRedirect("TreinoServlet");
     }
 }
