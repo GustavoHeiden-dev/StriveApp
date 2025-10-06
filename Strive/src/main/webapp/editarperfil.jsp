@@ -139,6 +139,67 @@
         .bottom-nav a { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--text-muted); font-size: 0.7rem; gap: 4px; transition: color 0.3s; }
         .bottom-nav a .icon { font-size: 1.4rem; }
         .bottom-nav a.active, .bottom-nav a:hover { color: var(--primary-color); }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: var(--bg-card);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .modal-content h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .modal-content p {
+            margin-bottom: 25px;
+            color: var(--text-dark);
+        }
+
+        .modal-actions button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        #btn-confirmar-senha {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+        #btn-confirmar-senha:hover {
+            background-color: var(--secondary-color);
+        }
+
+        #btn-cancelar-senha {
+            background-color: #e0e0e0;
+            color: var(--text-dark);
+        }
+
+        #btn-cancelar-senha:hover {
+            background-color: #ccc;
+        }
 
         @media(min-width: 768px) {
             .form-grid { grid-template-columns: 1fr 1fr; }
@@ -158,7 +219,7 @@
             <ul class="nav-list">
                 <li><a href="home.jsp"><i class="fas fa-home icon"></i> Home</a></li>
                 <li><a href="workout.jsp"><i class="fas fa-dumbbell icon"></i> Treino</a></li>
-                <li><a href="progress.jsp"><i class="fas fa-chart-line icon"></i> Progresso</a></li>
+                <li><a href="ProgressoServlet"><i class="fas fa-chart-line icon"></i> Progresso</a></li>
                 <li><a href="editarperfil.jsp" class="active"><i class="fas fa-user icon"></i> Perfil</a></li>
             </ul>
         </aside>
@@ -172,6 +233,10 @@
             <div class="profile-card">
                 <% if ("true".equals(request.getParameter("success"))) { %>
                     <div class="success-message">Perfil atualizado com sucesso!</div>
+                <% } else if ("same_password".equals(request.getParameter("error"))) { %>
+                    <div class="warning-message">
+                        <strong>Atenção:</strong> A nova senha não pode ser igual à sua senha atual.
+                    </div>
                 <% } %>
 
                 <div class="profile-header">
@@ -181,7 +246,7 @@
                     </div>
                 </div>
 
-                <form action="PerfilServlet" method="post">
+                <form action="PerfilServlet" method="post" id="perfilForm">
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="nome">Nome Completo</label>
@@ -212,13 +277,13 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="senha">Senha</label>
-                            <input type="password" id="senha" name="senha" required>
+                            <label for="senha">Nova Senha (deixe em branco para manter a atual)</label>
+                            <input type="password" id="senha" name="senha" placeholder="Preencha apenas para mudar a senha">
                         </div>
                     </div>
-                    <button type="submit" class="btn-submit">Salvar Alterações</button>
+                    <button type="button" id="submitButton" class="btn-submit">Salvar Alterações</button>
                     <div class="warning-message">
-                        <strong>Atenção:</strong> Por favor, insira sua senha atual ou uma nova senha para poder salvar as alterações.
+                        <strong>Atenção:</strong> Preencha o campo "Nova Senha" para alterá-la. Deixe em branco para manter a senha atual.
                     </div>
                 </form>
             </div>
@@ -227,9 +292,55 @@
         <nav class="bottom-nav">
             <a href="home.jsp"><i class="fas fa-home icon"></i> Home</a>
             <a href="workout.jsp"><i class="fas fa-dumbbell icon"></i> Treino</a>
-            <a href="progress.jsp"><i class="fas fa-chart-line icon"></i> Progresso</a>
+            <a href="ProgressoServlet"><i class="fas fa-chart-line icon"></i> Progresso</a>
             <a href="editarperfil.jsp" class="active"><i class="fas fa-user icon"></i> Perfil</a>
         </nav>
     </div>
+
+    <div class="modal-overlay" id="confirmPasswordModal">
+        <div class="modal-content">
+            <h3>🚨 Confirmação de Segurança</h3>
+            <p>Você está prestes a <strong>alterar sua senha</strong> de acesso. Tem certeza de que deseja prosseguir com a nova senha?</p>
+            <div class="modal-actions">
+                <button type="button" id="btn-cancelar-senha">Cancelar</button>
+                <button type="button" id="btn-confirmar-senha">Sim, Alterar Senha</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('perfilForm');
+            const submitButton = document.getElementById('submitButton');
+            const senhaInput = document.getElementById('senha');
+            const modal = document.getElementById('confirmPasswordModal');
+            const btnConfirmar = document.getElementById('btn-confirmar-senha');
+            const btnCancelar = document.getElementById('btn-cancelar-senha');
+
+            submitButton.addEventListener('click', function(event) {
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+                
+                // Se o campo de senha não estiver vazio, aciona o modal de confirmação
+                if (senhaInput.value.trim() !== "") {
+                    modal.style.display = 'flex';
+                } else {
+                    // Se o campo estiver vazio, submete diretamente (mantendo a senha atual)
+                    form.submit();
+                }
+            });
+
+            btnConfirmar.addEventListener('click', function() {
+                modal.style.display = 'none';
+                form.submit();
+            });
+
+            btnCancelar.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+        });
+    </script>
 </body>
 </html>
