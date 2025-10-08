@@ -3,6 +3,7 @@ package Servelet;
 import java.io.IOException;
 import java.util.List;
 import Dao.ProgressoDAO;
+import Modelos.ContagemMensal;
 import Modelos.Progresso;
 import Modelos.ProgressoExercicio;
 import Modelos.Usuario;
@@ -35,9 +36,12 @@ public class ProgressoServlet extends HttpServlet {
         List<ProgressoExercicio> progressoPeso = progressoDao.listarProgressoPeso(idUsuario);
         List<Progresso> historicoPeso = progressoDao.listarHistoricoPeso(idUsuario);
         
+        List<ContagemMensal> treinosPorMes = progressoDao.listarTreinosPorMes(idUsuario); 
+        
         request.setAttribute("sessoesConcluidas", sessoesConcluidas);
         request.setAttribute("progressoPeso", progressoPeso);
         request.setAttribute("historicoPeso", historicoPeso);
+        request.setAttribute("treinosPorMes", treinosPorMes); 
 
         request.getRequestDispatcher("progresso.jsp").forward(request, response);
     }
