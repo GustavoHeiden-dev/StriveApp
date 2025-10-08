@@ -2,9 +2,12 @@ package Dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import Utils.ConexaoDB;
+import Modelos.Usuario;
 
 public class UsuarioExercicioDao {
 
@@ -34,5 +37,39 @@ public class UsuarioExercicioDao {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public int obterOuCriar(int idUsuario, int idExercicio, int idSessao) {
+        String sqlSelect = "SELECT id_usuario_exercicio FROM UsuarioExercicio WHERE id_usuario = ? AND id_exercicio = ? AND id_sessao = ?";
+        String sqlInsert = "INSERT INTO UsuarioExercicio (id_usuario, id_exercicio, id_sessao, data_execucao) VALUES (?, ?, ?, NOW())";
+
+        try (Connection con = ConexaoDB.getConnection()) {
+            try (PreparedStatement psSelect = con.prepareStatement(sqlSelect)) {
+                psSelect.setInt(1, idUsuario);
+                psSelect.setInt(2, idExercicio);
+                psSelect.setInt(3, idSessao);
+                try (ResultSet rs = psSelect.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getInt("id_usuario_exercicio");
+                    }
+                }
+            }
+
+            try (PreparedStatement psInsert = con.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS)) {
+                psInsert.setInt(1, idUsuario);
+                psInsert.setInt(2, idExercicio);
+                psInsert.setInt(3, idSessao);
+                psInsert.executeUpdate();
+
+                try (ResultSet rs = psInsert.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        return rs.getInt(1);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }
