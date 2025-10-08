@@ -95,7 +95,7 @@
             <ul class="nav-list">
                 <li><a href="home.jsp"><i class="fas fa-home icon"></i> Home</a></li>
                 <li><a href="TreinoServlet" class="active"><i class="fas fa-dumbbell icon"></i> Treino</a></li>
-                <li><a href="progress.jsp"><i class="fas fa-chart-line icon"></i> Progresso</a></li>
+                <li><a href="ProgressoServlet"><i class="fas fa-chart-line icon"></i> Progresso</a></li>
                 <li><a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a></li>
             </ul>
         </aside>
@@ -188,7 +188,7 @@
         <nav class="bottom-nav">
             <a href="home.jsp"><i class="fas fa-home icon"></i> Home</a>
             <a href="TreinoServlet" class="active"><i class="fas fa-dumbbell icon"></i> Treino</a>
-            <a href="progress.jsp"><i class="fas fa-chart-line icon"></i> Progresso</a>
+            <a href="ProgressoServlet"><i class="fas fa-chart-line icon"></i> Progresso</a>
             <a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a>
         </nav>
     </div>
