@@ -1,22 +1,22 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="Modelos.Usuario, java.util.List" %>
-<%@ page import="Modelos.Progresso, Modelos.ProgressoExercicio" %>
+<%@ page import="Modelos.Progresso, Modelos.ProgressoExercicio, Modelos.ContagemMensal" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%
+    // Lógica JSP para carregar dados e calcular estatísticas
     Usuario usuario = (Usuario) session.getAttribute("usuario");
     if (usuario == null) {
         response.sendRedirect("login.jsp");
         return;
     }
     
-    // ESTES DADOS VÊM DO PROGRESSOSERVLET
+    // As listas devem ser carregadas pelo ProgressoServlet
     List<Progresso> sessoes = (List<Progresso>) request.getAttribute("sessoesConcluidas");
     List<ProgressoExercicio> progressosPeso = (List<ProgressoExercicio>) request.getAttribute("progressoPeso");
-    // List<Progresso> historicoPeso = (List<Progresso>) request.getAttribute("historicoPeso"); // Removido do uso no gráfico
+    List<ContagemMensal> treinosPorMes = (List<ContagemMensal>) request.getAttribute("treinosPorMes");
 
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     
-    // --- Cálculo de Estatísticas Gerais ---
     int totalTreinos = (sessoes != null) ? sessoes.size() : 0;
     int totalDuracaoMinutos = 0;
     if (sessoes != null) {
@@ -29,14 +29,13 @@
     
     float duracaoMedia = (totalTreinos > 0) ? (float)totalDuracaoMinutos / totalTreinos : 0;
     
-    // --- Lógica para o novo indicador de Progresso de Consistência ---
     final int META_MINUTOS_PADRAO = 1000; 
     int minutosParaMeta = META_MINUTOS_PADRAO;
     
-    // Adapta a meta baseada no nível do usuário (exemplo)
     if ("avançado".equalsIgnoreCase(usuario.getNivelInicial())) {
         minutosParaMeta = 3000;
-    } else if ("intermediário".equalsIgnoreCase(usuario.getNivelInicial())) {
+    } 
+    else if ("intermediário".equalsIgnoreCase(usuario.getNivelInicial())) {
         minutosParaMeta = 2000;
     }
 
@@ -53,11 +52,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
         :root {
             --primary-color: #6a0dad;
             --secondary-color: #8A2BE2;
-            --success-color: #3CB371; /* Cor verde para duração média */
+            --success-color: #3CB371;
             --bg-light: #f9f9fb;
             --bg-card: #ffffff;
             --bg-sidebar: #f0f0f5;
@@ -77,9 +77,11 @@
             font-family: 'Poppins', sans-serif;
             background-color: var(--bg-light);
             color: var(--text-dark);
+            overflow-x: hidden; 
         }
         .dashboard-container {
             display: flex;
+            width: 100%; 
         }
         .sidebar {
             width: var(--sidebar-width);
@@ -129,6 +131,8 @@
             flex: 1;
             padding: 2rem;
             padding-bottom: 100px;
+            min-width: 0; 
+            width: 100%;
         }
         .main-header h1 {
             font-size: 2.5rem;
@@ -141,6 +145,7 @@
             margin-bottom: 2rem;
         }
         .stats-grid {
+            /* Responsividade padrão: 150px é o tamanho mínimo, ajusta colunas */
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 1.5rem;
@@ -168,9 +173,10 @@
             opacity: 0.9;
         }
         .progress-grid {
+            /* No Mobile (Padrão), usa apenas UMA coluna para garantir que os cards se empilhem */
             display: grid;
             gap: 2rem;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: 1fr; 
         }
         .card {
             background: var(--bg-card);
@@ -198,6 +204,21 @@
             border-bottom: 1px solid #f0f0f0;
             font-size: 1rem;
         }
+        /* Ajuste para o Histórico no Mobile (quebra a linha se o texto for muito longo) */
+        @media (max-width: 450px) {
+            .list-group-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .list-group-item div {
+                width: 100%;
+                text-align: left !important;
+            }
+            .list-group-item div:last-child {
+                margin-top: 5px;
+            }
+        }
+
         .list-group-item:last-child {
             border-bottom: none;
         }
@@ -237,7 +258,6 @@
             color: var(--primary-color);
         }
 
-        /* Estilos do novo indicador de progresso */
         .progress-bar-container {
             width: 100%;
             background-color: var(--bg-light);
@@ -255,17 +275,30 @@
             transition: width 0.5s ease;
         }
         
+        .chart-container {
+            position: relative;
+            height: 350px; 
+            width: 100%;
+        }
+        
+        /* Media Query para Desktop (992px ou mais) */
         @media (min-width: 992px) {
             .sidebar {
                 display: block;
             }
             .main-content {
                 margin-left: var(--sidebar-width);
+                width: auto;
             }
             .bottom-nav {
                 display: none;
             }
-            .progress-grid > .card[style*="grid-column: span 2"] {
+            .progress-grid {
+                /* No Desktop, volta para 2 colunas, mas ajusta o minmax para garantir que o chart/progresso use 2 colunas */
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            }
+            /* Garante que os cards de Consistência e Gráfico usem 2 colunas no desktop */
+            .progress-grid > .card.span-2 {
                 grid-column: span 2;
             }
         }
@@ -307,7 +340,7 @@
             
             <div class="progress-grid">
                 
-                <div class="card" style="grid-column: span 2;"> 
+                <div class="card span-2"> 
                     <h2>Progresso de Consistência de Treino</h2>
                     <p style="margin-bottom: 1rem;">
                         Você completou <strong><%= totalDuracaoMinutos %></strong> minutos de uma meta de <strong><%= minutosParaMeta %></strong> minutos para o nível <%= usuario.getNivelInicial() %>.
@@ -316,6 +349,13 @@
                         <div class="progress-bar" style="width: <%= String.format("%.0f", porcentagemProgresso) %>%;">
                             <%= String.format("%.0f", porcentagemProgresso) %>%
                         </div>
+                    </div>
+                </div>
+                
+                <div class="card span-2">
+                    <h2>Consistência Mensal</h2>
+                    <div class="chart-container">
+                        <canvas id="treinosChart"></canvas>
                     </div>
                 </div>
                 
@@ -365,5 +405,118 @@
             <a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a>
         </nav>
     </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dadosTreinos = [];
+        <% if (treinosPorMes != null) {
+            for (ContagemMensal cm : treinosPorMes) { %>
+                dadosTreinos.push({
+                    // Conversão explícita para inteiro para maior robustez
+                    ano: parseInt(<%= cm.getAno() %>),
+                    mes: parseInt(<%= cm.getMes() %>),
+                    total: parseInt(<%= cm.getTotalTreinos() %>)
+                });
+        <%  }
+        } %>
+
+        if (dadosTreinos.length > 0) {
+            const meses = [
+                "Jan", "Fev", "Mar", "Abr", "Mai", "Jun", 
+                "Jul", "Ago", "Set", "Out", "Nov", "Dez"
+            ];
+            
+            const labels = dadosTreinos.map(d => {
+                let mesIndex = d.mes - 1;
+                
+                // Validação de índice: Garante que o índice esteja entre 0 e 11, evitando meses inválidos (0)
+                if (mesIndex < 0 || mesIndex > 11 || isNaN(mesIndex)) {
+                    // Retorna 'Inválido' se o mês for incorreto.
+                    return "Inválido"; 
+                }
+                
+                // Formato Mês (ex: Set) - ALTERADO: Removida a concatenação com o ano
+                return meses[mesIndex];
+            });
+            
+            const data = dadosTreinos.map(d => d.total);
+            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+            const textDarkColor = getComputedStyle(document.documentElement).getPropertyValue('--text-dark').trim();
+
+            const ctx = document.getElementById('treinosChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Treinos Concluídos',
+                        data: data,
+                        backgroundColor: primaryColor,
+                        borderColor: primaryColor,
+                        borderWidth: 1,
+                        borderRadius: 6,
+                        hoverBackgroundColor: 'rgba(106, 13, 173, 0.9)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                precision: 0
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            // Configuração de Ticks (Rótulos) Adicionada/Ajustada para forçar visibilidade
+                            ticks: { 
+                                color: textDarkColor, 
+                                autoSkip: false,     
+                                maxRotation: 45,     
+                                minRotation: 45
+                            },
+                            barPercentage: 0.6, 
+                            categoryPercentage: 0.8 
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleFont: { size: 14 },
+                            bodyFont: { size: 12 },
+                            displayColors: false,
+                             // Adiciona o ano ao tooltip para contexto, já que foi removido do rótulo
+                            callbacks: {
+                                title: function(tooltipItems, data) {
+                                    const index = tooltipItems[0].dataIndex;
+                                    const ano = dadosTreinos[index].ano;
+                                    const mes = meses[dadosTreinos[index].mes - 1];
+                                    return mes + "/" + ano;
+                                },
+                                label: function(tooltipItem, data) {
+                                    return 'Treinos: ' + tooltipItem.formattedValue;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        } else {
+            const chartContainer = document.getElementById('treinosChart').parentNode;
+            chartContainer.innerHTML = '<div class="chart-container"><p style="text-align: center; color: #777; margin-top: 5rem;">Ainda não há treinos concluídos para exibir no gráfico.</p></div>';
+        }
+    });
+    </script>
 </body>
 </html>

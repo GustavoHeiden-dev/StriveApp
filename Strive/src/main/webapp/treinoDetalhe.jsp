@@ -350,20 +350,16 @@ body {
 </style>
 </head>
 <body>
-	<div class="dashboard-container">
-		<aside class="sidebar">
-			<div class="logo">STRIVE</div>
-			<ul class="nav-list">
-				<li><a href="home.jsp"><i class="fas fa-home icon"></i>
-						Home</a></li>
-				<li><a href="TreinoServlet" class="active"><i
-						class="fas fa-dumbbell icon"></i> Treino</a></li>
-				<li><a href="progress.jsp"><i
-						class="fas fa-chart-line icon"></i> Progresso</a></li>
-				<li><a href="editarperfil.jsp"><i class="fas fa-user icon"></i>
-						Perfil</a></li>
-			</ul>
-		</aside>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="logo">STRIVE</div>
+            <ul class="nav-list">
+                <li><a href="home.jsp"><i class="fas fa-home icon"></i> Home</a></li>
+                <li><a href="TreinoServlet" class="active"><i class="fas fa-dumbbell icon"></i> Treino</a></li>
+                <li><a href="ProgressoServlet"><i class="fas fa-chart-line icon"></i> Progresso</a></li>
+                <li><a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a></li>
+            </ul>
+        </aside>
 
 		<main class="main-content">
 			<div class="main-header">
