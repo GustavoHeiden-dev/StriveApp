@@ -2,12 +2,15 @@ package Servelet;
 
 import java.io.IOException;
 import Dao.SerieDAO;
+import Dao.UsuarioExercicioDao;
 import Modelos.Serie;
+import Modelos.Usuario;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/AdicionarSerieServlet")
 public class AdicionarSerieServlet extends HttpServlet {
@@ -15,13 +18,37 @@ public class AdicionarSerieServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        
+        HttpSession session = request.getSession();
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
         String jsonResponse;
-        
+
+        if (usuario == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            jsonResponse = "{\"status\": \"error\", \"message\": \"Usuário não está logado.\"}";
+            response.getWriter().write(jsonResponse);
+            return;
+        }
+
         try {
-            int idUsuarioExercicio = Integer.parseInt(request.getParameter("idUsuarioExercicio"));
-            int repeticoes = Integer.parseInt(request.getParameter("repeticoes"));
-            float peso = Float.parseFloat(request.getParameter("peso"));
+            String idExercicioStr = request.getParameter("idExercicio");
+            String idSessaoStr = request.getParameter("idSessao");
+            String repeticoesStr = request.getParameter("repeticoes");
+            String pesoStr = request.getParameter("peso");
+
+            if (idExercicioStr == null || idExercicioStr.trim().isEmpty() ||
+                idSessaoStr == null || idSessaoStr.trim().isEmpty() ||
+                repeticoesStr == null || repeticoesStr.trim().isEmpty() ||
+                pesoStr == null || pesoStr.trim().isEmpty()) {
+
+                jsonResponse = "{\"status\":\"error\",\"message\":\"Parâmetros incompletos.\"}";
+                response.getWriter().write(jsonResponse);
+                return;
+            }
+
+            int idExercicio = Integer.parseInt(idExercicioStr.trim());
+            int idSessao = Integer.parseInt(idSessaoStr.trim());
+            int repeticoes = Integer.parseInt(repeticoesStr.trim());
+            float peso = Float.parseFloat(pesoStr.trim());
 
             if (repeticoes <= 0 || repeticoes > 500) {
                 jsonResponse = "{\"status\": \"error\", \"message\": \"Número de repetições inválido.\"}";
@@ -35,18 +62,23 @@ public class AdicionarSerieServlet extends HttpServlet {
                 return;
             }
 
-            Serie novaSerie = new Serie();
-            novaSerie.setIdUsuarioExercicio(idUsuarioExercicio);
-            novaSerie.setRepeticoes(repeticoes);
-            novaSerie.setPeso(peso);
+            UsuarioExercicioDao usuarioExercicioDAO = new UsuarioExercicioDao();
+            int idUsuarioExercicio = usuarioExercicioDAO.obterOuCriar(usuario.getId(), idExercicio, idSessao);
 
-            SerieDAO serieDAO = new SerieDAO();
-            boolean sucesso = serieDAO.salvar(novaSerie);
+            if (idUsuarioExercicio > 0) {
+                Serie novaSerie = new Serie();
+                novaSerie.setIdUsuarioExercicio(idUsuarioExercicio);
+                novaSerie.setRepeticoes(repeticoes);
+                novaSerie.setPeso(peso);
 
-            if (sucesso) {
-                jsonResponse = "{\"status\": \"success\", \"message\": \"Série adicionada com sucesso!\"}";
+                SerieDAO serieDAO = new SerieDAO();
+                boolean sucesso = serieDAO.salvar(novaSerie);
+
+                jsonResponse = sucesso
+                        ? "{\"status\": \"success\", \"message\": \"Série adicionada com sucesso!\"}"
+                        : "{\"status\": \"error\", \"message\": \"Erro ao salvar a série no banco de dados.\"}";
             } else {
-                jsonResponse = "{\"status\": \"error\", \"message\": \"Erro ao salvar a série no banco de dados.\"}";
+                jsonResponse = "{\"status\": \"error\", \"message\": \"Não foi possível criar o registro do exercício.\"}";
             }
 
         } catch (NumberFormatException e) {
@@ -58,5 +90,10 @@ public class AdicionarSerieServlet extends HttpServlet {
         }
 
         response.getWriter().write(jsonResponse);
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doPost(req, resp);
     }
 }

@@ -30,6 +30,7 @@
             --success-color: #28a745;
             --success-light-color: #e9f7ec;
             --disabled-color: #ccc;
+            --error-color: #dc3545;
             --sidebar-width: 250px;
             --border-radius: 12px;
             --shadow: 0 4px 15px rgba(0,0,0,0.08);
@@ -74,7 +75,8 @@
         .form-group label { font-size: 0.9rem; margin-bottom: 0.25rem; display: block; }
         .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; font-family: 'Poppins', sans-serif; }
         .btn-concluir-exercicio { background-color: var(--success-color); }
-        
+        .serie-error-message { color: var(--error-color); font-weight: 500; margin-top: 0.5rem; height: 1em; }
+
         @media (max-width: 768px) {
             .main-header h1 { font-size: 1.8rem; }
             .serie-form .form-row { grid-template-columns: 1fr; }
@@ -138,7 +140,8 @@
                             </ul>
 
                             <form class="serie-form" data-exercicio-id="<%= ex.getId() %>">
-                                <input type="hidden" name="idUsuarioExercicio" value="<%= ex.getId() %>">
+                                <input type="hidden" name="idExercicio" value="<%= ex.getId() %>">
+                                <input type="hidden" name="idSessao" value="<%= idSessao %>">
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label>Repetições</label>
@@ -159,6 +162,7 @@
                                         </button>
                                     </div>
                                 </div>
+                                <div class="serie-error-message" id="error-<%= ex.getId() %>"></div>
                             </form>
                         </div>
                     </div>
@@ -217,17 +221,22 @@
                     const exercicioId = this.dataset.exercicioId;
                     const seriesList = document.getElementById('series-list-' + exercicioId);
                     const noSeriesMsg = seriesList.querySelector('.no-series');
-                    const formData = new URLSearchParams(new FormData(this));
+                    const errorMessageDiv = document.getElementById('error-' + exercicioId);
                     
-                    const repeticoesValue = formData.get('repeticoes');
-                    const pesoValue = formData.get('peso');
+                    const repeticoesInput = this.querySelector('input[name="repeticoes"]');
+                    const pesoInput = this.querySelector('input[name="peso"]');
+                    const repeticoesValue = repeticoesInput.value;
+                    const pesoValue = pesoInput.value;
+                    
+                    const formData = new URLSearchParams(new FormData(this));
 
                     fetch('AdicionarSerieServlet', {
                         method: 'POST',
                         body: formData
                     })
-                    .then(response => response.ok ? response.json() : Promise.reject('Erro de rede'))
+                    .then(response => response.json())
                     .then(data => {
+                        errorMessageDiv.textContent = '';
                         if (data.status === 'success') {
                             if (noSeriesMsg) {
                                 noSeriesMsg.remove();
@@ -237,14 +246,14 @@
                             newSerieItem.innerHTML = `<span>${repeticoesValue} repetições</span><span>${pesoValue} kg</span>`;
                             seriesList.appendChild(newSerieItem);
                             this.reset();
-                            this.querySelector('input[name="repeticoes"]').focus();
+                            repeticoesInput.focus();
                         } else {
-                            alert('Erro: ' + data.message);
+                            errorMessageDiv.textContent = data.message;
                         }
                     })
                     .catch(error => {
                         console.error('Erro no fetch:', error);
-                        alert('Não foi possível adicionar a série.');
+                        errorMessageDiv.textContent = 'Não foi possível adicionar a série.';
                     });
                 });
             });
