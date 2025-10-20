@@ -3,8 +3,7 @@ package Dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement; // ---> IMPORT ADICIONADO
-
+import java.sql.Statement;
 import Modelos.Usuario;
 import Utils.ConexaoDB;
 
@@ -36,13 +35,11 @@ public class UsuarioDAO {
 	    return usuario;
 	}
 
-    // --- MÉTODO CADASTRAR MODIFICADO ---
 	public void cadastrar(Usuario usuario) throws Exception {
 		String sql = "INSERT INTO Usuario (nome, email, senha, idade, pesoInicial , altura, nivelInicial) "
-				   + "VALUES (?, ?, MD5(?), ?, ?, ?, ?)";
+				    + "VALUES (?, ?, MD5(?), ?, ?, ?, ?)";
 		
 		try (Connection con = ConexaoDB.getConnection()) {
-			// Suas validações existentes
 			String checkEmailSql = "SELECT COUNT(*) FROM Usuario WHERE email = ?";
 			try (PreparedStatement checkStmt = con.prepareStatement(checkEmailSql)) {
 				checkStmt.setString(1, usuario.getEmail());
@@ -62,7 +59,6 @@ public class UsuarioDAO {
 				throw new Exception("Peso inválido.");
 			}
 
-			// Modificamos a criação do PreparedStatement para nos retornar o ID gerado
 			try (PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 				stmt.setString(1, usuario.getNome());
 				stmt.setString(2, usuario.getEmail());
@@ -74,14 +70,11 @@ public class UsuarioDAO {
 
 				int affectedRows = stmt.executeUpdate();
 
-				// Se o usuário foi inserido, obtemos o ID e criamos o treino padrão
 				if (affectedRows > 0) {
 					try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
 						if (generatedKeys.next()) {
-							// Define o ID recém-criado no objeto usuario
 							usuario.setId(generatedKeys.getInt(1));
 							
-							// AGORA, CHAMAMOS O DAO PARA CRIAR O TREINO PADRÃO
 							TreinoDAO treinoDao = new TreinoDAO();
 							treinoDao.criarTreinoPadraoParaUsuario(usuario);
 						}
@@ -89,12 +82,10 @@ public class UsuarioDAO {
 				}
 			}
 		} catch (Exception e) {
-			// Re-lança a exceção para que o Servlet possa tratá-la
 			throw e;
 		}
 	}
-    // --- FIM DO MÉTODO MODIFICADO ---
-        
+	    
 	public void editar(Usuario usuario) {
 		try (Connection con = ConexaoDB.getConnection()) {
 			String sql = "UPDATE Usuario SET nome = ?, email = ?, senha = MD5(?), idade = ?, pesoInicial = ?, altura = ?, nivelInicial = ? WHERE id_usuario = ?";
@@ -138,4 +129,81 @@ public class UsuarioDAO {
 		}
 		return usuario;
 	}
+
+    public Usuario buscarPorEmail(String email) {
+        Usuario usuario = null;
+        String sql = "SELECT * FROM Usuario WHERE email = ?";
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, email);
+    
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                usuario = new Usuario();
+                usuario.setId(rs.getInt("id_usuario"));
+                usuario.setNome(rs.getString("nome"));
+                usuario.setEmail(rs.getString("email"));
+                usuario.setSenha(rs.getString("senha"));
+                usuario.setIdade(rs.getInt("idade"));
+                usuario.setPesoInicial(rs.getFloat("pesoInicial"));
+                usuario.setAltura(rs.getFloat("altura"));
+                usuario.setNivelInicial(rs.getString("nivelInicial"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return usuario;
+    }
+
+    public boolean salvarToken(int idUsuario, String token) {
+        String sql = "UPDATE Usuario SET token_resetar_senha = ? WHERE id_usuario = ?";
+        
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            
+            stmt.setString(1, token);
+            stmt.setInt(2, idUsuario);
+            
+            int linhasAfetadas = stmt.executeUpdate();
+            return linhasAfetadas > 0;
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public Usuario buscarPorToken(String token) {
+        Usuario usuario = null;
+        String sql = "SELECT * FROM Usuario WHERE token_resetar_senha = ?";
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, token);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    usuario = new Usuario();
+                    usuario.setId(rs.getInt("id_usuario"));
+                    usuario.setEmail(rs.getString("email"));
+                    usuario.setNome(rs.getString("nome"));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return usuario;
+    }
+
+    public boolean redefinirSenha(int idUsuario, String novaSenha) {
+        String sql = "UPDATE Usuario SET senha = MD5(?), token_resetar_senha = NULL WHERE id_usuario = ?";
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, novaSenha);
+            stmt.setInt(2, idUsuario);
+            int linhasAfetadas = stmt.executeUpdate();
+            return linhasAfetadas > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

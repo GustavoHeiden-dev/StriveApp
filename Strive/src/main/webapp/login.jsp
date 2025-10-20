@@ -256,7 +256,7 @@
                    </div>
                    
                    <div class="options">
-                        <a href="#">Esqueci minha senha</a>
+                        <a href="esqueciSenha.jsp">Esqueci minha senha</a>
                    </div>
 
                    <button type="submit" class="btn-submit">Entrar</button>
