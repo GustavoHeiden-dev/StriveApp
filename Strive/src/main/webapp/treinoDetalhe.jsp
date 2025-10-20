@@ -273,9 +273,11 @@ body {
 	margin-bottom: 1.5rem;
 }
 
+/* ESTILIZAÇÃO DAS SÉRIES JÁ ADICIONADAS */
 .serie-item {
 	display: flex;
 	justify-content: space-between;
+	align-items: center;
 	background-color: var(--light-color);
 	padding: 0.75rem 1rem;
 	border-radius: 6px;
@@ -283,31 +285,90 @@ body {
 	font-weight: 500;
 }
 
+.serie-item div { /* O div interno que contém os spans */
+    display: flex;
+    gap: 2rem; 
+    flex-grow: 1;
+    align-items: center;
+}
+
+.serie-item span {
+    background-color: var(--white-color); 
+    padding: 6px 12px;
+    border-radius: 8px; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666; 
+    white-space: nowrap; 
+}
+
+.serie-item span i {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+}
+
+.serie-item span strong {
+    font-size: 1.1rem; 
+    font-weight: 700;
+    color: var(--dark-color); 
+}
+/* FIM DA ESTILIZAÇÃO DAS SÉRIES JÁ ADICIONADAS */
+
+
+/* INÍCIO DA ESTILIZAÇÃO DO FORMULÁRIO DE ADIÇÃO DE SÉRIE */
 .serie-form .form-row {
 	display: grid;
 	grid-template-columns: 1fr 1fr auto auto;
 	gap: 1rem;
-	align-items: flex-end;
+	/* CORRIGIDO: Alinhar itens ao final para que os botões não se estiquem */
+	align-items: flex-end; 
 }
 
 .form-group {
 	margin-bottom: 0;
 }
 
-.form-group label {
-	font-size: 0.9rem;
+/* Estilização do rótulo do campo com ícone */
+.serie-form .form-group label {
+	font-size: 0.95rem;
 	margin-bottom: 0.25rem;
-	display: block;
+	display: flex; 
+	align-items: center;
+	gap: 8px;
+	font-weight: 600;
+	color: var(--dark-color);
 }
 
-.form-group input {
-	width: 100%;
-	padding: 10px;
-	border: 1px solid #ddd;
-	border-radius: 8px;
-	font-size: 1rem;
-	font-family: 'Poppins', sans-serif;
+.serie-form .form-group label i {
+    color: var(--primary-color);
 }
+
+/* Estilização do input (Repetições e Peso) */
+.serie-form .form-group input {
+	width: 100%;
+	padding: 12px; 
+	border: 2px solid #ddd; 
+	border-radius: 10px; 
+	font-size: 1.0rem;
+	font-family: 'Poppins', sans-serif;
+	transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.serie-form .form-group input:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.1); 
+    outline: none;
+}
+
+/* CORRIGIDO: Remover altura forçada (height: 100%) e usar o padding padrão do .btn */
+.serie-form .form-group button {
+    /* height: 100%; REMOVIDO */
+    padding: 10px 20px; 
+    font-size: 1rem;
+}
+/* FIM DA ESTILIZAÇÃO DO FORMULÁRIO DE ADIÇÃO DE SÉRIE */
 
 .btn-concluir-exercicio {
 	background-color: var(--success-color);
@@ -318,6 +379,22 @@ body {
 	font-weight: 500;
 	margin-top: 0.5rem;
 	height: 1em;
+}
+
+.btn-remover-serie {
+    background: none;
+    border: none;
+    color: var(--error-color);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0 5px;
+    line-height: 1;
+    transition: color 0.2s;
+    margin-left: 10px;
+}
+
+.btn-remover-serie:hover {
+    color: var(--dark-color);
 }
 
 @media ( max-width : 768px) {
@@ -367,7 +444,10 @@ body {
 					<h1>Executando Treino</h1>
 					<p>Adicione suas séries e conclua os exercícios.</p>
 				</div>
-				<div class="progress-counter" id="progressCounter">
+                <div class="progress-counter" id="timerDisplay" style="margin-right: 1rem;">
+					<i class="fas fa-clock"></i> 00:00:00
+				</div>
+                <div class="progress-counter" id="progressCounter">
 					<i class="fas fa-dumbbell"></i> <span id="completedCount">0</span>/<%=totalExercicios%>
 					Concluídos
 				</div>
@@ -397,8 +477,17 @@ body {
 						if (ex.getSeries() != null && !ex.getSeries().isEmpty()) {
 							for (Serie s : ex.getSeries()) {
 						%>
-						<li class="serie-item"><span><%=s.getRepeticoes()%>
-								repetições</span> <span><%=s.getPeso()%> kg</span></li>
+						<li class="serie-item" data-id-serie="<%=s.getId()%>">
+                            <div>
+                                <span><i class="fas fa-sync-alt"></i> <strong><%=s.getRepeticoes()%></strong> rep</span>
+                                <span><i class="fas fa-weight-hanging"></i> <strong><%=s.getPeso()%></strong> kg</span>
+                            </div>
+                            <button type="button" class="btn-remover-serie" 
+                                data-id-serie="<%=s.getId()%>"
+                                data-exercicio-id="<%=ex.getId()%>">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </li>
 						<%
 						}
 						} else {
@@ -416,11 +505,13 @@ body {
 						<input type="hidden" name="idSessao" value="<%=idSessao%>">
 						<div class="form-row">
 							<div class="form-group">
-								<label>Repetições</label> <input type="number" name="repeticoes"
+								<label><i class="fas fa-sync-alt"></i> Repetições</label> 
+								<input type="number" name="repeticoes"
 									placeholder="12" required>
 							</div>
 							<div class="form-group">
-								<label>Peso (kg)</label> <input type="number" step="0.5"
+								<label><i class="fas fa-weight-hanging"></i> Peso (kg)</label> 
+								<input type="number" step="0.5"
 									name="peso" placeholder="50.5" required>
 							</div>
 							<div class="form-group">
@@ -450,7 +541,8 @@ body {
 					id="finalizarTreinoForm">
 					<input type="hidden" name="idSessao" value="<%=idSessao%>">
 					<input type="hidden" name="idTreino" value="<%=idTreino%>">
-					<button type="submit" id="finalizarBtn"
+                    <input type="hidden" name="duracaoTreino" id="duracaoTreinoInput">
+                    <button type="submit" id="finalizarBtn"
 						class="btn btn-success btn-finalizar disabled">
 						<i class="fas fa-flag-checkered"></i> Finalizar Treino
 					</button>
@@ -482,6 +574,41 @@ body {
 
 	<script>
         document.addEventListener('DOMContentLoaded', () => {
+            
+            let seconds = 0;
+            let minutes = 0;
+            let hours = 0;
+            const timerDisplay = document.getElementById('timerDisplay');
+            const duracaoTreinoInput = document.getElementById('duracaoTreinoInput');
+            
+            function formatTime(val) {
+                return val < 10 ? "0" + val : val;
+            }
+            
+            function updateTimer() {
+                seconds++;
+                if (seconds === 60) {
+                    seconds = 0;
+                    minutes++;
+                    if (minutes === 60) {
+                        minutes = 0;
+                        hours++;
+                    }
+                }
+                
+                const timeString = formatTime(hours) + ":" + formatTime(minutes) + ":" + formatTime(seconds);
+                timerDisplay.innerHTML = '<i class="fas fa-clock"></i> ' + timeString;
+                duracaoTreinoInput.value = timeString;
+            }
+            
+            const timerInterval = setInterval(updateTimer, 1000); 
+            
+            const finalizarTreinoForm = document.getElementById('finalizarTreinoForm');
+            finalizarTreinoForm.addEventListener('submit', function(event) {
+                clearInterval(timerInterval); 
+            });
+
+
             let completedCount = 0;
             const totalExercicios = <%=totalExercicios%>;
             const completedCountSpan = document.getElementById('completedCount');
@@ -491,11 +618,61 @@ body {
             function updateProgress() {
                 completedCount++;
                 completedCountSpan.textContent = completedCount;
-                if (completedCount >= 1) {
+                if (completedCount >= 1) { 
                     finalizarBtn.classList.remove('disabled');
                     finalizarBtn.disabled = false;
                 }
             }
+
+            function handleDeleteSerie(event) {
+                const button = event.currentTarget;
+                const idSerie = button.dataset.idSerie;
+                const exercicioId = button.dataset.exercicioId;
+                const serieItem = button.closest('.serie-item');
+                const seriesList = document.getElementById('series-list-' + exercicioId);
+
+                if (!confirm('Tem certeza que deseja excluir esta série?')) {
+                    return;
+                }
+                
+                const params = new URLSearchParams();
+                params.append('idSerie', idSerie);
+                
+                fetch('RemoverSerieServlet', {
+                    method: 'POST',
+                    body: params
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        serieItem.remove();
+                        
+                        if (seriesList.children.length === 0) {
+                            const noSeriesMsg = document.createElement('li');
+                            noSeriesMsg.className = 'no-series';
+                            noSeriesMsg.style.cssText = 'text-align: center; color: var(--text-muted);';
+                            noSeriesMsg.textContent = 'Nenhuma série registrada.';
+                            seriesList.appendChild(noSeriesMsg);
+                        }
+
+                    } else {
+                        alert('Erro ao remover a série: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro no fetch de remoção:', error);
+                    alert('Não foi possível remover a série.');
+                });
+            }
+
+            // CORREÇÃO APLICADA: Delegação de eventos
+            document.addEventListener('click', function(event) {
+                const targetButton = event.target.closest('.btn-remover-serie');
+                if (targetButton) {
+                    handleDeleteSerie({ currentTarget: targetButton });
+                }
+            });
+
 
             document.querySelectorAll('.serie-form').forEach(form => {
                 form.addEventListener('submit', function(event) {
@@ -524,12 +701,31 @@ body {
                             if (noSeriesMsg) {
                                 noSeriesMsg.remove();
                             }
+                            
+                            const newIdSerie = data.idSerie; 
+
                             const newSerieItem = document.createElement('li');
                             newSerieItem.className = 'serie-item';
-                            newSerieItem.innerHTML = `<span>${repeticoesValue} repetições</span><span>${pesoValue} kg</span>`;
+                            newSerieItem.setAttribute('data-id-serie', newIdSerie);
+                            
+                            // ALTERADO: HTML para exibir a nova série com a estilização aplicada
+                            const pesoFormatado = parseFloat(pesoValue).toFixed(1);
+                            
+                            newSerieItem.innerHTML = 
+                                '<div>' +
+                                    '<span><i class="fas fa-sync-alt"></i> <strong>' + repeticoesValue + '</strong> rep</span>' +
+                                    '<span><i class="fas fa-weight-hanging"></i> <strong>' + pesoFormatado + '</strong> kg</span>' +
+                                '</div>' + 
+                                '<button type="button" class="btn-remover-serie" ' +
+                                'data-id-serie="' + newIdSerie + '" ' +
+                                'data-exercicio-id="' + exercicioId + '">' + 
+                                '<i class="fas fa-times"></i></button>';
+
                             seriesList.appendChild(newSerieItem);
                             this.reset();
                             repeticoesInput.focus();
+                            
+
                         } else {
                             errorMessageDiv.textContent = data.message;
                         }
@@ -573,6 +769,7 @@ body {
                     });
                 });
             });
+            
         });
     </script>
 </body>
