@@ -48,7 +48,8 @@ public class AdicionarSerieServlet extends HttpServlet {
             int idExercicio = Integer.parseInt(idExercicioStr.trim());
             int idSessao = Integer.parseInt(idSessaoStr.trim());
             int repeticoes = Integer.parseInt(repeticoesStr.trim());
-            float peso = Float.parseFloat(pesoStr.trim());
+            // Uso de replace para garantir que vírgulas sejam tratadas como pontos em Java (se necessário)
+            float peso = Float.parseFloat(pesoStr.trim().replace(',', '.'));
 
             if (repeticoes <= 0 || repeticoes > 500) {
                 jsonResponse = "{\"status\": \"error\", \"message\": \"Número de repetições inválido.\"}";
@@ -72,20 +73,26 @@ public class AdicionarSerieServlet extends HttpServlet {
                 novaSerie.setPeso(peso);
 
                 SerieDAO serieDAO = new SerieDAO();
-                boolean sucesso = serieDAO.salvar(novaSerie);
+                
+                // MUDANÇA PRINCIPAL: Captura o ID da série. 
+                // É CRUCIAL que serieDAO.salvar() retorne o ID da série inserida.
+                int idSerieGerado = serieDAO.salvarRetornandoId(novaSerie); // Assumindo novo método ou ajuste no salvar()
 
-                jsonResponse = sucesso
-                        ? "{\"status\": \"success\", \"message\": \"Série adicionada com sucesso!\"}"
-                        : "{\"status\": \"error\", \"message\": \"Erro ao salvar a série no banco de dados.\"}";
+                if (idSerieGerado > 0) {
+                    // RETORNA O ID da série no JSON
+                    jsonResponse = "{\"status\": \"success\", \"message\": \"Série adicionada com sucesso!\", \"idSerie\": " + idSerieGerado + "}";
+                } else {
+                    jsonResponse = "{\"status\": \"error\", \"message\": \"Erro ao salvar a série no banco de dados.\"}";
+                }
             } else {
                 jsonResponse = "{\"status\": \"error\", \"message\": \"Não foi possível criar o registro do exercício.\"}";
             }
 
         } catch (NumberFormatException e) {
-            jsonResponse = "{\"status\": \"error\", \"message\": \"Dados inválidos. Verifique os números digitados.\"}";
+            jsonResponse = "{\"status\": \"error\", \"message\": \"Dados inválidos. Verifique os números digitados (e use ponto em vez de vírgula para o peso, se o erro persistir).\"}";
             e.printStackTrace();
         } catch (Exception e) {
-            jsonResponse = "{\"status\": \"error\", \"message\": \"Ocorreu um erro inesperado.\"}";
+            jsonResponse = "{\"status\": \"error\", \"message\": \"Ocorreu um erro inesperado: " + e.getMessage().replace("\"", "'") + "\"}";
             e.printStackTrace();
         }
 
