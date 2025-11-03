@@ -91,27 +91,6 @@
             width: 20px;
             text-align: center;
         }
-        
-        /* NOVO ESTILO PARA O LINK DE SAIR (Ajustado) */
-        .nav-list .logout-link a {
-            color: #d9534f; /* Texto vermelho, sem borda */
-            margin-top: 1rem;
-        }
-
-        .sidebar .nav-list .logout-link a:hover {
-            /* Ao passar o mouse, fica com o fundo de um vermelho suave */
-            background-color: #fcebeb; 
-            color: #c9302c; /* Deixa o texto um pouco mais escuro no hover */
-        }
-        
-        /* Garantir que o link de sair na navegação inferior também tenha estilo */
-        .bottom-nav a[href*="SairServlet"] {
-            color: #d9534f; 
-        }
-
-        .bottom-nav a[href*="SairServlet"]:hover {
-            color: #c9302c;
-        }
 
         .main-content {
             flex: 1;
@@ -245,8 +224,8 @@
                 <li><a href="home.jsp" class="active"><i class="fas fa-home icon"></i> Home</a></li>
                 <li><a href="TreinoServlet" ><i class="fas fa-dumbbell icon"></i> Treino</a></li>
                 <li><a href="ProgressoServlet"><i class="fas fa-chart-line icon"></i> Progresso</a></li>
+                <li><a href="ConquistasServlet"><i class="fas fa-trophy icon"></i> Conquistas</a></li>
                 <li><a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a></li>
-                
                 <li class="logout-link"><a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i> Sair</a></li>
             </ul>
         </aside>
@@ -294,8 +273,8 @@
             <a href="home.jsp" class="active"><i class="fas fa-home icon"></i> Home</a>
            	<a href="TreinoServlet"><i class="fas fa-dumbbell icon"></i> Treino</a>
             <a href="ProgressoServlet"><i class="fas fa-chart-line icon"></i> Progresso</a>
+            <a href="ConquistasServlet"><i class="fas fa-trophy icon"></i> Conquistas</a>
             <a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a>
-            
             <a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i> Sair</a>
         </nav>
 

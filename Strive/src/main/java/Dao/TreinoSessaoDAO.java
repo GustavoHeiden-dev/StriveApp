@@ -43,4 +43,24 @@ public class TreinoSessaoDAO {
             e.printStackTrace();
         }
     }
+
+    public int contarSessoesConcluidas(int idUsuario) {
+        String sql = "SELECT COUNT(*) FROM TreinoSessao WHERE id_usuario = ? AND data_fim IS NOT NULL";
+        int total = 0;
+        
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            
+            stmt.setInt(1, idUsuario);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    total = rs.getInt(1);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return total;
+    }
 }

@@ -9,7 +9,6 @@ if (usuario == null) {
 }
 List<Treino> treinos = (List<Treino>) request.getAttribute("treinos");
 List<Exercicio> todosExercicios = (List<Exercicio>) request.getAttribute("todosExercicios");
-
 boolean treinoFinalizado = session.getAttribute("treinoFinalizado") != null;
 if (treinoFinalizado) {
 	session.removeAttribute("treinoFinalizado");
@@ -468,14 +467,12 @@ body {
 						Perfil</a></li>
 			</ul>
 		</aside>
-
 		<main class="main-content">
 			<header class="main-header">
 				<h1>Seus Treinos</h1>
 				<p>Explore os treinos disponíveis ou crie uma nova rotina
 					personalizada.</p>
 			</header>
-
 			<section id="formCard" class="card">
 				<h2 id="formTitle">Criar Novo Treino</h2>
 				<form id="createTreinoForm" action="TreinoServlet" method="post">
@@ -502,7 +499,6 @@ body {
 						Treino</button>
 				</form>
 			</section>
-
 			<section class="card">
 				<h2>Treinos Disponíveis</h2>
 				<div class="treinos-grid">
@@ -544,7 +540,6 @@ body {
 				</div>
 			</section>
 		</main>
-
 		<nav class="bottom-nav">
 			<a href="home.jsp"><i class="fas fa-home icon"></i> Home</a> <a
 				href="TreinoServlet" class="active"><i
@@ -553,7 +548,6 @@ body {
 				href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a>
 		</nav>
 	</div>
-
 	<div id="exercicioModal" class="modal-overlay">
 		<div class="modal">
 			<div class="modal-header">
@@ -572,13 +566,12 @@ body {
 					<%
 					for (Exercicio ex : todosExercicios) {
 					%>
-					<li data-id="<%=ex.getId()%>" data-name="<%=ex.getNome()%>">
-						<input type="checkbox" id="ex-<%=ex.getId()%>"> <label
+					<li data-id="<%=ex.getId()%>" data-name="<%=ex.getNome()%>"><input
+						type="checkbox" id="ex-<%=ex.getId()%>"> <label
 						for="ex-<%=ex.getId()%>" style="flex-grow: 1; cursor: pointer;">
 							<%=ex.getNome()%> <small>(<%=ex.getGrupoMuscular()%>)
 						</small>
-					</label>
-					</li>
+					</label></li>
 					<%
 					}
 					%>
@@ -596,212 +589,6 @@ body {
 			</div>
 		</div>
 	</div>
-
-	<script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const openModalBtn = document.getElementById('openModalBtn');
-            const modalOverlay = document.getElementById('exercicioModal');
-            const closeModalBtn = document.getElementById('closeModalBtn');
-            const confirmSelectionBtn = document.getElementById('confirmSelectionBtn');
-            const searchInput = document.getElementById('searchExercicio');
-            const exerciseListItems = modalOverlay.querySelectorAll('.modal-exercicio-list li');
-            const selectedContainer = document.getElementById('selectedExercisesContainer');
-            const hiddenInputsContainer = document.getElementById('hidden-inputs-container');
-            
-            const formCard = document.getElementById('formCard');
-            const formTitle = document.getElementById('formTitle');
-            const createTreinoForm = document.getElementById('createTreinoForm');
-            const acaoInput = createTreinoForm.querySelector('input[name="acao"]');
-            const idTreinoInput = createTreinoForm.querySelector('input[name="idTreino"]');
-            const nomeTreinoInput = createTreinoForm.querySelector('input[name="nome"]');
-
-            let selectedExercises = new Map();
-
-            function openModal() {
-                exerciseListItems.forEach(item => {
-                    const id = item.dataset.id;
-                    const checkbox = item.querySelector('input[type="checkbox"]');
-                    checkbox.checked = selectedExercises.has(id);
-                    item.classList.toggle('selected', checkbox.checked);
-                });
-                modalOverlay.classList.add('active');
-            }
-
-            function closeModal() {
-                modalOverlay.classList.remove('active');
-            }
-
-            function updateSelectedDisplay() {
-                selectedContainer.innerHTML = '';
-                hiddenInputsContainer.innerHTML = '';
-                const list = document.createElement('ul');
-                list.className = 'selected-exercises-list';
-
-                if (selectedExercises.size === 0) {
-                    list.innerHTML = '<li>Nenhum exercício selecionado.</li>';
-                } else {
-                    selectedExercises.forEach((name, id) => {
-                        const listItem = document.createElement('li');
-                        listItem.className = 'selected-exercise-item';
-                        
-                        const textNode = document.createTextNode(name + ' ');
-                        listItem.appendChild(textNode);
-
-                        const removeBtn = document.createElement('button');
-                        removeBtn.className = 'remove-exercise-btn';
-                        removeBtn.innerHTML = '&times;';
-                        removeBtn.dataset.id = id;
-                        removeBtn.type = 'button';
-
-                        removeBtn.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            const exerciseIdToRemove = e.target.dataset.id;
-                            selectedExercises.delete(exerciseIdToRemove);
-                            updateSelectedDisplay();
-                        });
-
-                        listItem.appendChild(removeBtn);
-                        list.appendChild(listItem);
-
-                        const hiddenInput = document.createElement('input');
-                        hiddenInput.type = 'hidden';
-                        hiddenInput.name = 'exercicios';
-                        hiddenInput.value = id;
-                        hiddenInputsContainer.appendChild(hiddenInput);
-                    });
-                }
-                selectedContainer.appendChild(list);
-            }
-
-            openModalBtn.addEventListener('click', openModal);
-            closeModalBtn.addEventListener('click', closeModal);
-            modalOverlay.addEventListener('click', (e) => {
-                if (e.target === modalOverlay) closeModal();
-            });
-
-            confirmSelectionBtn.addEventListener('click', () => {
-                exerciseListItems.forEach(item => {
-                    const checkbox = item.querySelector('input[type="checkbox"]');
-                    const exerciseId = item.dataset.id;
-                    const exerciseName = item.dataset.name;
-                    if (checkbox.checked) {
-                        selectedExercises.set(exerciseId, exerciseName);
-                    } else {
-                        selectedExercises.delete(exerciseId);
-                    }
-                });
-                updateSelectedDisplay();
-                closeModal();
-            });
-
-            exerciseListItems.forEach(item => {
-                item.addEventListener('click', (e) => {
-                    const checkbox = item.querySelector('input[type="checkbox"]');
-                    if (e.target.tagName !== 'INPUT') {
-                        checkbox.checked = !checkbox.checked;
-                    }
-                    item.classList.toggle('selected', checkbox.checked);
-                });
-            });
-
-            searchInput.addEventListener('keyup', () => {
-                const filter = searchInput.value.toLowerCase();
-                exerciseListItems.forEach(item => {
-                    const name = item.dataset.name.toLowerCase();
-                    item.style.display = name.includes(filter) ? 'flex' : 'none';
-                });
-            });
-            
-            document.querySelectorAll('.edit-treino-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const btn = e.currentTarget;
-                    const treinoId = btn.dataset.treinoId;
-                    const treinoNome = btn.dataset.treinoNome;
-                    const exerciciosIds = btn.dataset.exerciciosIds ? btn.dataset.exerciciosIds.split(',') : [];
-
-                    formTitle.textContent = 'Editar Treino: ' + treinoNome;
-                    acaoInput.value = 'atualizar';
-                    idTreinoInput.value = treinoId;
-                    nomeTreinoInput.value = treinoNome;
-
-                    selectedExercises.clear();
-                    if (exerciciosIds.length > 0 && exerciciosIds[0] !== '') {
-                        exerciciosIds.forEach(id => {
-                            const listItem = document.querySelector(`.modal-exercicio-list li[data-id='${id}']`);
-                            if (listItem) {
-                                selectedExercises.set(id, listItem.dataset.name);
-                            }
-                        });
-                    }
-                    
-                    updateSelectedDisplay();
-                    openModal();
-                    formCard.scrollIntoView({ behavior: 'smooth' });
-                });
-            });
-
-            <%if (treinoFinalizado) {%>
-                function fireConfetti() {
-                    const duration = 3 * 1000;
-                    const animationEnd = Date.now() + duration;
-                    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1050 };
-
-                    function randomInRange(min, max) {
-                        return Math.random() * (max - min) + min;
-                    }
-
-                    const interval = setInterval(function() {
-                        const timeLeft = animationEnd - Date.now();
-                        if (timeLeft <= 0) {
-                            return clearInterval(interval);
-                        }
-                        const particleCount = 50 * (timeLeft / duration);
-                        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
-                        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
-                    }, 250);
-                }
-
-                function fireBalloons() {
-                    const end = Date.now() + (2 * 1000);
-                    const colors = ['#6a0dad', '#8A2BE2', '#4CAF50'];
-
-                    (function frame() {
-                        confetti({
-                            particleCount: 2,
-                            angle: 60,
-                            spread: 55,
-                            origin: { x: 0, y: 0.8 },
-                            colors: colors,
-                            shapes: ['circle', 'square']
-                        });
-                        confetti({
-                            particleCount: 2,
-                            angle: 120,
-                            spread: 55,
-                            origin: { x: 1, y: 0.8 },
-                            colors: colors,
-                            shapes: ['circle', 'square']
-                        });
-
-                        if (Date.now() < end) {
-                            requestAnimationFrame(frame);
-                        }
-                    }());
-                }
-
-                Swal.fire({
-                    title: 'Parabéns!',
-                    text: 'Treino finalizado com sucesso. Você é imparável!',
-                    icon: 'success',
-                    confirmButtonText: 'Missão Cumprida!',
-                    confirmButtonColor: '#4CAF50',
-                    willOpen: () => {
-                        fireConfetti();
-                        fireBalloons();
-                    }
-                });
-            <%}%>
-        });
-    </script>
+	<script> document.addEventListener('DOMContentLoaded', () => { const openModalBtn = document.getElementById('openModalBtn'); const modalOverlay = document.getElementById('exercicioModal'); const closeModalBtn = document.getElementById('closeModalBtn'); const confirmSelectionBtn = document.getElementById('confirmSelectionBtn'); const searchInput = document.getElementById('searchExercicio'); const exerciseListItems = modalOverlay.querySelectorAll('.modal-exercicio-list li'); const selectedContainer = document.getElementById('selectedExercisesContainer'); const hiddenInputsContainer = document.getElementById('hidden-inputs-container'); const formCard = document.getElementById('formCard'); const formTitle = document.getElementById('formTitle'); const createTreinoForm = document.getElementById('createTreinoForm'); const acaoInput = createTreinoForm.querySelector('input[name="acao"]'); const idTreinoInput = createTreinoForm.querySelector('input[name="idTreino"]'); const nomeTreinoInput = createTreinoForm.querySelector('input[name="nome"]'); let selectedExercises = new Map(); function openModal() { exerciseListItems.forEach(item => { const id = item.dataset.id; const checkbox = item.querySelector('input[type="checkbox"]'); checkbox.checked = selectedExercises.has(id); item.classList.toggle('selected', checkbox.checked); }); modalOverlay.classList.add('active'); } function closeModal() { modalOverlay.classList.remove('active'); } function updateSelectedDisplay() { selectedContainer.innerHTML = ''; hiddenInputsContainer.innerHTML = ''; const list = document.createElement('ul'); list.className = 'selected-exercises-list'; if (selectedExercises.size === 0) { list.innerHTML = '<li>Nenhum exercício selecionado.</li>'; } else { selectedExercises.forEach((name, id) => { const listItem = document.createElement('li'); listItem.className = 'selected-exercise-item'; const textNode = document.createTextNode(name + ' '); listItem.appendChild(textNode); const removeBtn = document.createElement('button'); removeBtn.className = 'remove-exercise-btn'; removeBtn.innerHTML = '&times;'; removeBtn.dataset.id = id; removeBtn.type = 'button'; removeBtn.addEventListener('click', (e) => { e.stopPropagation(); const exerciseIdToRemove = e.target.dataset.id; selectedExercises.delete(exerciseIdToRemove); updateSelectedDisplay(); }); listItem.appendChild(removeBtn); list.appendChild(listItem); const hiddenInput = document.createElement('input'); hiddenInput.type = 'hidden'; hiddenInput.name = 'exercicios'; hiddenInput.value = id; hiddenInputsContainer.appendChild(hiddenInput); }); } selectedContainer.appendChild(list); } openModalBtn.addEventListener('click', openModal); closeModalBtn.addEventListener('click', closeModal); modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); }); confirmSelectionBtn.addEventListener('click', () => { exerciseListItems.forEach(item => { const checkbox = item.querySelector('input[type="checkbox"]'); const exerciseId = item.dataset.id; const exerciseName = item.dataset.name; if (checkbox.checked) { selectedExercises.set(exerciseId, exerciseName); } else { selectedExercises.delete(exerciseId); } }); updateSelectedDisplay(); closeModal(); }); exerciseListItems.forEach(item => { item.addEventListener('click', (e) => { const checkbox = item.querySelector('input[type="checkbox"]'); if (e.target.tagName !== 'INPUT') { checkbox.checked = !checkbox.checked; } item.classList.toggle('selected', checkbox.checked); }); }); searchInput.addEventListener('keyup', () => { const filter = searchInput.value.toLowerCase(); exerciseListItems.forEach(item => { const name = item.dataset.name.toLowerCase(); item.style.display = name.includes(filter) ? 'flex' : 'none'; }); }); document.querySelectorAll('.edit-treino-btn').forEach(button => { button.addEventListener('click', (e) => { const btn = e.currentTarget; const treinoId = btn.dataset.treinoId; const treinoNome = btn.dataset.treinoNome; const exerciciosIds = btn.dataset.exerciciosIds ? btn.dataset.exerciciosIds.split(',') : []; formTitle.textContent = 'Editar Treino: ' + treinoNome; acaoInput.value = 'atualizar'; idTreinoInput.value = treinoId; nomeTreinoInput.value = treinoNome; selectedExercises.clear(); if (exerciciosIds.length > 0 && exerciciosIds[0] !== '') { exerciciosIds.forEach(id => { const listItem = document.querySelector(.modal-exercicio-list li[data-id='${id}']); if (listItem) { selectedExercises.set(id, listItem.dataset.name); } }); } updateSelectedDisplay(); openModal(); formCard.scrollIntoView({ behavior: 'smooth' }); }); }); <%if (treinoFinalizado) {%> function fireConfetti() { const duration = 3 * 1000; const animationEnd = Date.now() + duration; const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1050 }; function randomInRange(min, max) { return Math.random() * (max - min) + min; } const interval = setInterval(function() { const timeLeft = animationEnd - Date.now(); if (timeLeft <= 0) { return clearInterval(interval); } const particleCount = 50 * (timeLeft / duration); confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } })); confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } })); }, 250); } function fireBalloons() { const end = Date.now() + (2 * 1000); const colors = ['#6a0dad', '#8A2BE2', '#4CAF50']; (function frame() { confetti({ particleCount: 2, angle: 60, spread: 55, origin: { x: 0, y: 0.8 }, colors: colors, shapes: ['circle', 'square'] }); confetti({ particleCount: 2, angle: 120, spread: 55, origin: { x: 1, y: 0.8 }, colors: colors, shapes: ['circle', 'square'] }); if (Date.now() < end) { requestAnimationFrame(frame); } }()); } Swal.fire({ title: 'Parabéns!', text: 'Treino finalizado com sucesso. Você é imparável!', icon: 'success', confirmButtonText: 'Missão Cumprida!', confirmButtonColor: '#4CAF50', willOpen: () => { fireConfetti(); fireBalloons(); } }); <%}%> }); </script>
 </body>
 </html>
