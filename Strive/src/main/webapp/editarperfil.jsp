@@ -220,6 +220,7 @@
                 <li><a href="home.jsp"><i class="fas fa-home icon"></i> Home</a></li>
                 <li><a href="workout.jsp"><i class="fas fa-dumbbell icon"></i> Treino</a></li>
                 <li><a href="ProgressoServlet"><i class="fas fa-chart-line icon"></i> Progresso</a></li>
+                <li><a href="ConquistasServlet"><i class="fas fa-trophy icon"></i> Conquistas</a></li>
                 <li><a href="editarperfil.jsp" class="active"><i class="fas fa-user icon"></i> Perfil</a></li>
             </ul>
         </aside>
@@ -293,6 +294,7 @@
             <a href="home.jsp"><i class="fas fa-home icon"></i> Home</a>
             <a href="workout.jsp"><i class="fas fa-dumbbell icon"></i> Treino</a>
             <a href="ProgressoServlet"><i class="fas fa-chart-line icon"></i> Progresso</a>
+            <li><a href="ConquistasServlet"><i class="fas fa-trophy icon"></i> Conquistas</a></li>
             <a href="editarperfil.jsp" class="active"><i class="fas fa-user icon"></i> Perfil</a>
         </nav>
     </div>

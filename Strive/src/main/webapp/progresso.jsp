@@ -312,6 +312,7 @@
                 <li><a href="home.jsp"><i class="fas fa-home icon"></i> Home</a></li>
                 <li><a href="TreinoServlet"><i class="fas fa-dumbbell icon"></i> Treino</a></li>
                 <li><a href="ProgressoServlet" class="active"><i class="fas fa-chart-line icon"></i> Progresso</a></li>
+                <li><a href="ConquistasServlet"><i class="fas fa-trophy icon"></i> Conquistas</a></li>
                 <li><a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a></li>
                 <li class="logout-link"><a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i> Sair</a></li>
             </ul>
@@ -402,6 +403,7 @@
             <a href="home.jsp"><i class="fas fa-home icon"></i> Home</a>
             <a href="TreinoServlet"><i class="fas fa-dumbbell icon"></i> Treino</a>
             <a href="ProgressoServlet" class="active"><i class="fas fa-chart-line icon"></i> Progresso</a>
+            <li><a href="ConquistasServlet"><i class="fas fa-trophy icon"></i> Conquistas</a></li>
             <a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a>
         </nav>
     </div>
