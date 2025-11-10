@@ -98,4 +98,28 @@ public class SerieDAO {
         }
         return series;
     }
+    
+    public Float getMaiorPesoPorUsuarioExercicio(int idUsuarioExercicio) {
+        String sql = "SELECT MAX(peso) AS maior_peso FROM Serie WHERE id_usuario_exercicio = ?";
+        Float maiorPeso = null;
+        
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            
+            stmt.setInt(1, idUsuarioExercicio);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    // É importante usar getObject para verificar se é NULL no banco
+                    Object pesoObj = rs.getObject("maior_peso");
+                    if (pesoObj != null) {
+                        maiorPeso = rs.getFloat("maior_peso");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return maiorPeso;
+    }
 }
