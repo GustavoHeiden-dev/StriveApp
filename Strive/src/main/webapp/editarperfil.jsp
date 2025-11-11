@@ -135,8 +135,32 @@
             border: 1px solid #ffe58f;
         }
 
-        .bottom-nav { display: flex; justify-content: space-around; padding: 0.8rem 0; background-color: #f0f0f5; border-top: 1px solid #ddd; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); position: fixed; bottom: 0; left: 0; width: 100%; z-index: 100; }
-        .bottom-nav a { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--text-muted); font-size: 0.7rem; gap: 4px; transition: color 0.3s; }
+        .bottom-nav { 
+            display: flex; 
+            justify-content: space-around; 
+            padding: 0.8rem 0; 
+            background-color: #f0f0f5; 
+            border-top: 1px solid #ddd; 
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1); 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            width: 100%; 
+            z-index: 100; 
+        }
+        .bottom-nav a { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            text-decoration: none; 
+            color: var(--text-muted); 
+            font-size: 0.7rem; 
+            gap: 4px; 
+            transition: color 0.3s; 
+            flex-basis: 0;
+            flex-grow: 1;
+            text-align: center;
+        }
         .bottom-nav a .icon { font-size: 1.4rem; }
         .bottom-nav a.active, .bottom-nav a:hover { color: var(--primary-color); }
         
@@ -218,10 +242,9 @@
             <div class="logo">STRIVE</div>
             <ul class="nav-list">
                 <li><a href="home.jsp"><i class="fas fa-home icon"></i> Home</a></li>
-                <li><a href="workout.jsp"><i class="fas fa-dumbbell icon"></i> Treino</a></li>
-                <li><a href="ProgressoServlet"><i class="fas fa-chart-line icon"></i> Progresso</a></li>
-                <li><a href="ConquistasServlet"><i class="fas fa-trophy icon"></i> Conquistas</a></li>
+                <li><a href="TreinoServlet"><i class="fas fa-dumbbell icon"></i> Treino</a></li>
                 <li><a href="editarperfil.jsp" class="active"><i class="fas fa-user icon"></i> Perfil</a></li>
+                <li><a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i> Sair</a></li>
             </ul>
         </aside>
 
@@ -292,10 +315,9 @@
 
         <nav class="bottom-nav">
             <a href="home.jsp"><i class="fas fa-home icon"></i> Home</a>
-            <a href="workout.jsp"><i class="fas fa-dumbbell icon"></i> Treino</a>
-            <a href="ProgressoServlet"><i class="fas fa-chart-line icon"></i> Progresso</a>
-            <li><a href="ConquistasServlet"><i class="fas fa-trophy icon"></i> Conquistas</a></li>
+            <a href="TreinoServlet"><i class="fas fa-dumbbell icon"></i> Treino</a>
             <a href="editarperfil.jsp" class="active"><i class="fas fa-user icon"></i> Perfil</a>
+            <a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i> Sair</a>
         </nav>
     </div>
 
@@ -325,11 +347,9 @@
                     return;
                 }
                 
-                // Se o campo de senha não estiver vazio, aciona o modal de confirmação
                 if (senhaInput.value.trim() !== "") {
                     modal.style.display = 'flex';
                 } else {
-                    // Se o campo estiver vazio, submete diretamente (mantendo a senha atual)
                     form.submit();
                 }
             });

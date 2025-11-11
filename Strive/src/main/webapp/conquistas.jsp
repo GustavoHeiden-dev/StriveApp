@@ -295,6 +295,9 @@ body {
 	color: #888;
 	font-size: 0.7rem;
 	gap: 4px;
+	flex-basis: 0;
+	flex-grow: 1;
+	text-align: center;
 }
 
 .bottom-nav a .icon {
@@ -333,10 +336,6 @@ body {
 						Home</a></li>
 				<li><a href="TreinoServlet"><i class="fas fa-dumbbell icon"></i>
 						Treino</a></li>
-				<li><a href="progresso.jsp"><i
-						class="fas fa-chart-line icon"></i> Progresso</a></li>
-				<li><a href="ConquistasServlet" class="active"><i
-						class="fas fa-trophy icon"></i> Conquistas</a></li>
 				<li><a href="editarperfil.jsp"><i class="fas fa-user icon"></i>
 						Perfil</a></li>
 				<li><a href="SairServlet"><i
@@ -380,10 +379,9 @@ body {
 		<nav class="bottom-nav">
 			<a href="home.jsp"><i class="fas fa-home icon"></i> Home</a> <a
 				href="TreinoServlet"><i class="fas fa-dumbbell icon"></i> Treino</a>
-			<a href="progresso.jsp"><i class="fas fa-chart-line icon"></i>
-				Progresso</a> <a href="ConquistasServlet" class="active"><i
-				class="fas fa-trophy icon"></i> Conquistas</a> <a
-				href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a>
+			<a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a>
+			<a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i>
+				Sair</a>
 		</nav>
 	</div>
 

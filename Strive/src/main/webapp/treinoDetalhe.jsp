@@ -1,4 +1,3 @@
-
 <%@ page contentType="text/html;charset=UTF-8"
 	import="Modelos.Usuario, java.util.List, Modelos.Exercicio, Modelos.Serie"%>
 <%
@@ -253,6 +252,9 @@ body {
 	color: #888;
 	font-size: 0.7rem;
 	gap: 4px;
+    flex-basis: 0;
+    flex-grow: 1;
+    text-align: center;
 }
 
 .bottom-nav a .icon {
@@ -274,7 +276,6 @@ body {
 	margin-bottom: 1.5rem;
 }
 
-/* ESTILIZAÇÃO DAS SÉRIES JÁ ADICIONADAS */
 .serie-item {
 	display: flex;
 	justify-content: space-between;
@@ -286,56 +287,51 @@ body {
 	font-weight: 500;
 }
 
-.serie-item div { /* O div interno que contém os spans */
-    display: flex;
-    gap: 2rem; 
-    flex-grow: 1;
-    align-items: center;
+.serie-item div {
+	display: flex;
+	gap: 2rem;
+	flex-grow: 1;
+	align-items: center;
 }
 
 .serie-item span {
-    background-color: var(--white-color); 
-    padding: 6px 12px;
-    border-radius: 8px; 
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #666; 
-    white-space: nowrap; 
+	background-color: var(--white-color);
+	padding: 6px 12px;
+	border-radius: 8px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: #666;
+	white-space: nowrap;
 }
 
 .serie-item span i {
-    color: var(--primary-color);
-    font-size: 1.1rem;
+	color: var(--primary-color);
+	font-size: 1.1rem;
 }
 
 .serie-item span strong {
-    font-size: 1.1rem; 
-    font-weight: 700;
-    color: var(--dark-color); 
+	font-size: 1.1rem;
+	font-weight: 700;
+	color: var(--dark-color);
 }
-/* FIM DA ESTILIZAÇÃO DAS SÉRIES JÁ ADICIONADAS */
 
-
-/* INÍCIO DA ESTILIZAÇÃO DO FORMULÁRIO DE ADIÇÃO DE SÉRIE */
 .serie-form .form-row {
 	display: grid;
 	grid-template-columns: 1fr 1fr auto auto;
 	gap: 1rem;
-	/* CORRIGIDO: Alinhar itens ao final para que os botões não se estiquem */
-	align-items: flex-end; 
+	align-items: flex-end;
 }
 
 .form-group {
 	margin-bottom: 0;
 }
 
-/* Estilização do rótulo do campo com ícone */
 .serie-form .form-group label {
 	font-size: 0.95rem;
 	margin-bottom: 0.25rem;
-	display: flex; 
+	display: flex;
 	align-items: center;
 	gap: 8px;
 	font-weight: 600;
@@ -343,33 +339,29 @@ body {
 }
 
 .serie-form .form-group label i {
-    color: var(--primary-color);
+	color: var(--primary-color);
 }
 
-/* Estilização do input (Repetições e Peso) */
 .serie-form .form-group input {
 	width: 100%;
-	padding: 12px; 
-	border: 2px solid #ddd; 
-	border-radius: 10px; 
+	padding: 12px;
+	border: 2px solid #ddd;
+	border-radius: 10px;
 	font-size: 1.0rem;
 	font-family: 'Poppins', sans-serif;
 	transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .serie-form .form-group input:focus {
-    border-color: var(--secondary-color);
-    box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.1); 
-    outline: none;
+	border-color: var(--secondary-color);
+	box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.1);
+	outline: none;
 }
 
-/* CORRIGIDO: Remover altura forçada (height: 100%) e usar o padding padrão do .btn */
 .serie-form .form-group button {
-    /* height: 100%; REMOVIDO */
-    padding: 10px 20px; 
-    font-size: 1rem;
+	padding: 10px 20px;
+	font-size: 1rem;
 }
-/* FIM DA ESTILIZAÇÃO DO FORMULÁRIO DE ADIÇÃO DE SÉRIE */
 
 .btn-concluir-exercicio {
 	background-color: var(--success-color);
@@ -383,19 +375,19 @@ body {
 }
 
 .btn-remover-serie {
-    background: none;
-    border: none;
-    color: var(--error-color);
-    cursor: pointer;
-    font-size: 1rem;
-    padding: 0 5px;
-    line-height: 1;
-    transition: color 0.2s;
-    margin-left: 10px;
+	background: none;
+	border: none;
+	color: var(--error-color);
+	cursor: pointer;
+	font-size: 1rem;
+	padding: 0 5px;
+	line-height: 1;
+	transition: color 0.2s;
+	margin-left: 10px;
 }
 
 .btn-remover-serie:hover {
-    color: var(--dark-color);
+	color: var(--dark-color);
 }
 
 @media ( max-width : 768px) {
@@ -428,17 +420,19 @@ body {
 </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="logo">STRIVE</div>
-            <ul class="nav-list">
-                <li><a href="home.jsp"><i class="fas fa-home icon"></i> Home</a></li>
-                <li><a href="TreinoServlet" class="active"><i class="fas fa-dumbbell icon"></i> Treino</a></li>
-                <li><a href="ProgressoServlet"><i class="fas fa-chart-line icon"></i> Progresso</a></li>
-                <li><a href="ConquistasServlet"><i class="fas fa-trophy icon"></i> Conquistas</a></li>
-                <li><a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a></li>
-            </ul>
-        </aside>
+	<div class="dashboard-container">
+		<aside class="sidebar">
+			<div class="logo">STRIVE</div>
+			<ul class="nav-list">
+				<li><a href="home.jsp"><i class="fas fa-home icon"></i> Home</a></li>
+				<li><a href="TreinoServlet" class="active"><i
+						class="fas fa-dumbbell icon"></i> Treino</a></li>
+				<li><a href="editarperfil.jsp"><i class="fas fa-user icon"></i>
+						Perfil</a></li>
+				<li><a href="SairServlet"><i
+						class="fas fa-sign-out-alt icon"></i> Sair</a></li>
+			</ul>
+		</aside>
 
 		<main class="main-content">
 			<div class="main-header">
@@ -446,10 +440,11 @@ body {
 					<h1>Executando Treino</h1>
 					<p>Adicione suas séries e conclua os exercícios.</p>
 				</div>
-                <div class="progress-counter" id="timerDisplay" style="margin-right: 1rem;">
+				<div class="progress-counter" id="timerDisplay"
+					style="margin-right: 1rem;">
 					<i class="fas fa-clock"></i> 00:00:00
 				</div>
-                <div class="progress-counter" id="progressCounter">
+				<div class="progress-counter" id="progressCounter">
 					<i class="fas fa-dumbbell"></i> <span id="completedCount">0</span>/<%=totalExercicios%>
 					Concluídos
 				</div>
@@ -480,16 +475,17 @@ body {
 							for (Serie s : ex.getSeries()) {
 						%>
 						<li class="serie-item" data-id-serie="<%=s.getId()%>">
-                            <div>
-                                <span><i class="fas fa-sync-alt"></i> <strong><%=s.getRepeticoes()%></strong> rep</span>
-                                <span><i class="fas fa-weight-hanging"></i> <strong><%=s.getPeso()%></strong> kg</span>
-                            </div>
-                            <button type="button" class="btn-remover-serie" 
-                                data-id-serie="<%=s.getId()%>"
-                                data-exercicio-id="<%=ex.getId()%>">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </li>
+							<div>
+								<span><i class="fas fa-sync-alt"></i> <strong><%=s.getRepeticoes()%></strong>
+									rep</span> <span><i class="fas fa-weight-hanging"></i> <strong><%=s.getPeso()%></strong>
+									kg</span>
+							</div>
+							<button type="button" class="btn-remover-serie"
+								data-id-serie="<%=s.getId()%>"
+								data-exercicio-id="<%=ex.getId()%>">
+								<i class="fas fa-times"></i>
+							</button>
+						</li>
 						<%
 						}
 						} else {
@@ -507,14 +503,13 @@ body {
 						<input type="hidden" name="idSessao" value="<%=idSessao%>">
 						<div class="form-row">
 							<div class="form-group">
-								<label><i class="fas fa-sync-alt"></i> Repetições</label> 
-								<input type="number" name="repeticoes"
-									placeholder="12" required>
+								<label><i class="fas fa-sync-alt"></i> Repetições</label> <input
+									type="number" name="repeticoes" placeholder="12" required>
 							</div>
 							<div class="form-group">
-								<label><i class="fas fa-weight-hanging"></i> Peso (kg)</label> 
-								<input type="number" step="0.5"
-									name="peso" placeholder="50.5" required>
+								<label><i class="fas fa-weight-hanging"></i> Peso (kg)</label>
+								<input type="number" step="0.5" name="peso" placeholder="50.5"
+									required>
 							</div>
 							<div class="form-group">
 								<button type="submit" class="btn">
@@ -543,8 +538,8 @@ body {
 					id="finalizarTreinoForm">
 					<input type="hidden" name="idSessao" value="<%=idSessao%>">
 					<input type="hidden" name="idTreino" value="<%=idTreino%>">
-                    <input type="hidden" name="duracaoTreino" id="duracaoTreinoInput">
-                    <button type="submit" id="finalizarBtn"
+					<input type="hidden" name="duracaoTreino" id="duracaoTreinoInput">
+					<button type="submit" id="finalizarBtn"
 						class="btn btn-success btn-finalizar disabled">
 						<i class="fas fa-flag-checkered"></i> Finalizar Treino
 					</button>
@@ -568,10 +563,10 @@ body {
 		<nav class="bottom-nav">
 			<a href="home.jsp"><i class="fas fa-home icon"></i> Home</a> <a
 				href="TreinoServlet" class="active"><i
-				class="fas fa-dumbbell icon"></i> Treino</a> <a href="progress.jsp"><i
-				class="fas fa-chart-line icon"></i> Progresso</a> 
-				<li><a href="ConquistasServlet"><i class="fas fa-trophy icon"></i> Conquistas</a></li><a
+				class="fas fa-dumbbell icon"></i> Treino</a> <a
 				href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a>
+			<a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i>
+				Sair</a>
 		</nav>
 	</div>
 
@@ -668,7 +663,6 @@ body {
                 });
             }
 
-            // CORREÇÃO APLICADA: Delegação de eventos
             document.addEventListener('click', function(event) {
                 const targetButton = event.target.closest('.btn-remover-serie');
                 if (targetButton) {
@@ -711,7 +705,6 @@ body {
                             newSerieItem.className = 'serie-item';
                             newSerieItem.setAttribute('data-id-serie', newIdSerie);
                             
-                            // ALTERADO: HTML para exibir a nova série com a estilização aplicada
                             const pesoFormatado = parseFloat(pesoValue).toFixed(1);
                             
                             newSerieItem.innerHTML = 
@@ -763,12 +756,12 @@ body {
                             this.innerHTML = '<i class="fas fa-check-circle"></i> Concluído';
                             updateProgress();
                         } else {
-                            alert('Erro ao concluir o exercício: ' + data.message);
+                            alert('Erro ao concluir o exercício: 'Ocorreu um erro ao marcar o exercício como concluído.' + data.message);
                         }
                     })
                     .catch(error => {
                         console.error('Erro no fetch:', error);
-                        alert('Não foi possível concluir o exercício.');
+                        alert('Não foi possível concluir o exercício. Verifique sua conexão.');
                     });
                 });
             });

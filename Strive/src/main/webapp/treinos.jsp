@@ -412,6 +412,9 @@ body {
 	color: var(--text-muted);
 	font-size: 0.7rem;
 	gap: 4px;
+	flex-basis: 0;
+	flex-grow: 1;
+	text-align: center;
 }
 
 .bottom-nav a .icon {
@@ -461,12 +464,10 @@ body {
 						Home</a></li>
 				<li><a href="TreinoServlet" class="active"><i
 						class="fas fa-dumbbell icon"></i> Treino</a></li>
-				<li><a href="ProgressoServlet"><i
-						class="fas fa-chart-line icon"></i> Progresso</a></li>
-				<li><a href="ConquistasServlet"><i
-						class="fas fa-trophy icon"></i> Conquistas</a></li>
 				<li><a href="editarperfil.jsp"><i class="fas fa-user icon"></i>
 						Perfil</a></li>
+				<li><a href="SairServlet"><i
+						class="fas fa-sign-out-alt icon"></i> Sair</a></li>
 			</ul>
 		</aside>
 		<main class="main-content">
@@ -545,12 +546,10 @@ body {
 		<nav class="bottom-nav">
 			<a href="home.jsp"><i class="fas fa-home icon"></i> Home</a> <a
 				href="TreinoServlet" class="active"><i
-				class="fas fa-dumbbell icon"></i> Treino</a> <a href="ProgressoServlet"><i
-				class="fas fa-chart-line icon"></i> Progresso</a> <a
-				href="ConquistasServlet"><i class="fas fa-trophy icon"></i>
-				Conquistas</a>
-			<ahref="editarperfil.jsp"> <i class="fas fa-user icon"></i>
-			Perfil</a>
+				class="fas fa-dumbbell icon"></i> Treino</a> <a
+				href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a>
+			<a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i>
+				Sair</a>
 		</nav>
 	</div>
 	<div id="exercicioModal" class="modal-overlay">
@@ -594,7 +593,7 @@ body {
 			</div>
 		</div>
 	</div>
-<script>
+	<script>
 document.addEventListener('DOMContentLoaded', () => {
     const openModalBtn = document.getElementById('openModalBtn');
     const modalOverlay = document.getElementById('exercicioModal');

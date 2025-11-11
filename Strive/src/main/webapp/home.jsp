@@ -183,6 +183,9 @@
             font-size: 0.7rem;
             gap: 4px;
             transition: color 0.3s;
+            flex-basis: 0;
+            flex-grow: 1;
+            text-align: center;
         }
 
         .bottom-nav a .icon {
@@ -207,7 +210,8 @@
             .main-header p { font-size: 1.1rem; }
 
             .cards-grid {
-                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                /* Ajuste para 2 colunas fixas no desktop */
+                grid-template-columns: 1fr 1fr;
             }
             .bottom-nav {
                 display: none;
@@ -223,8 +227,6 @@
             <ul class="nav-list">
                 <li><a href="home.jsp" class="active"><i class="fas fa-home icon"></i> Home</a></li>
                 <li><a href="TreinoServlet" ><i class="fas fa-dumbbell icon"></i> Treino</a></li>
-                <li><a href="ProgressoServlet"><i class="fas fa-chart-line icon"></i> Progresso</a></li>
-                <li><a href="ConquistasServlet"><i class="fas fa-trophy icon"></i> Conquistas</a></li>
                 <li><a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a></li>
                 <li class="logout-link"><a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i> Sair</a></li>
             </ul>
@@ -232,26 +234,29 @@
 
         <main class="main-content">
             <div class="main-header">
-                <h1>Bem-vindo, <span><%= primeiroNome %></span></h1>
-				<p>
-					Hoje é
-					<%=java.time.LocalDate.now().getDayOfWeek().getDisplayName(java.time.format.TextStyle.FULL,
-		new java.util.Locale("pt", "BR"))%>,
-					<%=java.time.LocalDate.now().getDayOfMonth()%>
-					de
-					<%=java.time.LocalDate.now().getMonth().getDisplayName(java.time.format.TextStyle.FULL,
-		new java.util.Locale("pt", "BR"))%>
-					de
-					<%=java.time.LocalDate.now().getYear()%>. Um ótimo dia para
-					treinar!
-				</p>
+                <div>
+	                <h1>Bem-vindo, <span><%= primeiroNome %></span></h1>
+					<p>
+						Hoje é
+						<%=java.time.LocalDate.now().getDayOfWeek().getDisplayName(java.time.format.TextStyle.FULL,
+			new java.util.Locale("pt", "BR"))%>,
+						<%=java.time.LocalDate.now().getDayOfMonth()%>
+						de
+						<%=java.time.LocalDate.now().getMonth().getDisplayName(java.time.format.TextStyle.FULL,
+			new java.util.Locale("pt", "BR"))%>
+						de
+						<%=java.time.LocalDate.now().getYear()%>. Um ótimo dia para
+						treinar!
+					</p>
+                </div>
 			</div>
             
             <div class="cards-grid">
+                
                 <div class="card">
-                    <div class="card-icon"><i class="fas fa-clipboard-list"></i></div>
-                    <h2>Resumo do Dia</h2>
-                    <p>Aqui você pode ver seu progresso, treinos e dicas para manter a motivação.</p>
+                    <div class="card-icon"><i class="fas fa-lightbulb"></i></div>
+                    <h2>Dica do Dia</h2>
+                    <p>💪 A disciplina é a ponte entre metas e realizações. Mantenha o foco!</p>
                 </div>
                 
                 <div class="card">
@@ -262,18 +267,25 @@
                 </div>
 
                 <div class="card">
-                    <div class="card-icon"><i class="fas fa-lightbulb"></i></div>
-                    <h2>Dica do Dia</h2>
-                    <p>💪 A disciplina é a ponte entre metas e realizações. Mantenha o foco!</p>
+                    <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+                    <h2>Meu Progresso</h2>
+                    <p>Acompanhe sua evolução de peso, medidas e recordes pessoais.</p>
+                    <a href="ProgressoServlet" class="btn">Ver Progresso</a>
                 </div>
+
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-trophy"></i></div>
+                    <h2>Minhas Conquistas</h2>
+                    <p>Veja todas as medalhas e troféus que você ganhou na sua jornada.</p>
+                    <a href="ConquistasServlet" class="btn">Ver Conquistas</a>
+                </div>
+                
             </div>
         </main>
 
         <nav class="bottom-nav">
             <a href="home.jsp" class="active"><i class="fas fa-home icon"></i> Home</a>
            	<a href="TreinoServlet"><i class="fas fa-dumbbell icon"></i> Treino</a>
-            <a href="ProgressoServlet"><i class="fas fa-chart-line icon"></i> Progresso</a>
-            <a href="ConquistasServlet"><i class="fas fa-trophy icon"></i> Conquistas</a>
             <a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a>
             <a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i> Sair</a>
         </nav>

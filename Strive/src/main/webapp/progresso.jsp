@@ -129,7 +129,6 @@
         }
         .main-content {
             flex: 1;
-            /* AJUSTE MOBILE: Padding superior e inferior é 2rem. Laterais usam 1rem */
             padding: 2rem 1rem; 
             padding-bottom: 100px;
             min-width: 0; 
@@ -146,7 +145,6 @@
             margin-bottom: 2rem;
         }
         .stats-grid {
-            /* Responsividade padrão: 150px é o tamanho mínimo, ajusta colunas */
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 1.5rem;
@@ -174,7 +172,6 @@
             opacity: 0.9;
         }
         .progress-grid {
-            /* No Mobile (Padrão), usa apenas UMA coluna para garantir que os cards se empilhem */
             display: grid;
             gap: 2rem;
             grid-template-columns: 1fr; 
@@ -205,7 +202,6 @@
             border-bottom: 1px solid #f0f0f0;
             font-size: 1rem;
         }
-        /* Ajuste para o Histórico no Mobile (quebra a linha se o texto for muito longo) */
         @media (max-width: 450px) {
             .list-group-item {
                 flex-direction: column;
@@ -230,12 +226,12 @@
         .list-group-item span {
             color: var(--text-muted);
         }
-        /* ESTILO PADRONIZADO PARA O BOTTOM NAV */
+        
         .bottom-nav {
             display: flex;
             justify-content: space-around;
             padding: 0.8rem 0;
-            background-color: var(--bg-sidebar); /* Usando variável para consistência */
+            background-color: var(--bg-sidebar); 
             border-top: 1px solid #ddd;
             position: fixed;
             bottom: 0;
@@ -251,6 +247,9 @@
             color: var(--text-muted);
             font-size: 0.7rem;
             gap: 4px;
+            flex-basis: 0;
+            flex-grow: 1;
+            text-align: center;
         }
         .bottom-nav a .icon {
             font-size: 1.4rem;
@@ -283,13 +282,11 @@
             width: 100%;
         }
         
-        /* Media Query para Desktop (992px ou mais) */
         @media (min-width: 992px) {
             .sidebar {
                 display: block;
             }
             .main-content {
-                /* No desktop, voltamos a ter 2rem de padding em todos os lados e a margem lateral para o sidebar */
                 padding: 2rem;
                 margin-left: var(--sidebar-width);
                 width: auto;
@@ -298,10 +295,8 @@
                 display: none;
             }
             .progress-grid {
-                /* No Desktop, volta para 2 colunas */
                 grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
             }
-            /* Garante que os cards de Consistência e Gráfico usem 2 colunas no desktop */
             .progress-grid > .card.span-2 {
                 grid-column: span 2;
             }
@@ -315,10 +310,8 @@
             <ul class="nav-list">
                 <li><a href="home.jsp"><i class="fas fa-home icon"></i> Home</a></li>
                 <li><a href="TreinoServlet"><i class="fas fa-dumbbell icon"></i> Treino</a></li>
-                <li><a href="ProgressoServlet" class="active"><i class="fas fa-chart-line icon"></i> Progresso</a></li>
-                <li><a href="ConquistasServlet"><i class="fas fa-trophy icon"></i> Conquistas</a></li>
                 <li><a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a></li>
-                <li class="logout-link"><a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i> Sair</a></li>
+                <li><a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i> Sair</a></li>
             </ul>
         </aside>
 
@@ -385,14 +378,13 @@
                 <div class="card">
                     <h2>Histórico de Treinos</h2>
                     <% 
-                        final int LIMITE_EXIBICAO = 5; // Limita a 5 treinos para evitar que a div cresça demais
+                        final int LIMITE_EXIBICAO = 5; 
                         
                         if (sessoes != null && !sessoes.isEmpty()) { 
                             int contador = 0;
                     %>
                         <ul class="list-group">
                             <% for (Progresso sessao : sessoes) { 
-                                // Otimização: para o loop após atingir o limite
                                 if (contador >= LIMITE_EXIBICAO) break; 
                             %>
                                 <li class="list-group-item">
@@ -425,9 +417,8 @@
         <nav class="bottom-nav">
             <a href="home.jsp"><i class="fas fa-home icon"></i> Home</a>
             <a href="TreinoServlet"><i class="fas fa-dumbbell icon"></i> Treino</a>
-            <a href="ProgressoServlet" class="active"><i class="fas fa-chart-line icon"></i> Progresso</a>
-            <a href="ConquistasServlet"><i class="fas fa-trophy icon"></i> Conquistas</a>
             <a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a>
+            <a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i> Sair</a>
         </nav>
         </div>
 
@@ -437,7 +428,6 @@
         <% if (treinosPorMes != null) {
             for (ContagemMensal cm : treinosPorMes) { %>
                 dadosTreinos.push({
-                    // Conversão explícita para inteiro para maior robustez
                     ano: parseInt(<%= cm.getAno() %>),
                     mes: parseInt(<%= cm.getMes() %>),
                     total: parseInt(<%= cm.getTotalTreinos() %>)
@@ -452,15 +442,10 @@
             ];
             
             const labels = dadosTreinos.map(d => {
-                let mesIndex = d.mes - 1;
-                
-                // Validação de índice: Garante que o índice esteja entre 0 e 11, evitando meses inválidos (0)
+                let mesIndex = d.mes - 1; 
                 if (mesIndex < 0 || mesIndex > 11 || isNaN(mesIndex)) {
-                    // Retorna 'Inválido' se o mês for incorreto.
                     return "Inválido"; 
                 }
-                
-                // Formato Mês (ex: Set)
                 return meses[mesIndex];
             });
             
@@ -501,7 +486,6 @@
                             grid: {
                                 display: false
                             },
-                            // Configuração de Ticks (Rótulos) Adicionada/Ajustada para forçar visibilidade
                             ticks: { 
                                 color: textDarkColor, 
                                 autoSkip: false,     
@@ -521,7 +505,6 @@
                             titleFont: { size: 14 },
                             bodyFont: { size: 12 },
                             displayColors: false,
-                             // Adiciona o ano ao tooltip para contexto, já que foi removido do rótulo
                             callbacks: {
                                 title: function(tooltipItems, data) {
                                     const index = tooltipItems[0].dataIndex;
