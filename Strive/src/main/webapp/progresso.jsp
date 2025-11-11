@@ -282,6 +282,80 @@
             width: 100%;
         }
         
+<<<<<<< HEAD
+=======
+        /* ESTILOS DO MODAL */
+        .modal {
+            display: none; /* Escondido por padrão */
+            position: fixed;
+            z-index: 2000; /* Acima de tudo */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Permite scroll se o conteúdo for grande */
+            background-color: rgba(0,0,0,0.7); /* Fundo escuro semi-transparente */
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto; /* 5% do topo e centralizado */
+            padding: 20px;
+            border-radius: var(--border-radius);
+            width: 90%; /* Padrão mobile */
+            max-width: 600px; /* Largura máxima em desktop */
+            box-shadow: var(--shadow);
+            position: relative;
+            max-height: 90vh; /* Altura máxima da viewport */
+            overflow-y: auto; /* Scroll apenas no conteúdo do modal */
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: var(--primary-color);
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .modal-content h2 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+            font-size: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+        .modal-list-group-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .modal-list-group-item:last-child {
+            border-bottom: none;
+        }
+        /* Ajuste mobile para lista no modal */
+        @media (max-width: 450px) {
+            .modal-list-group-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .modal-list-group-item div {
+                width: 100%;
+                text-align: left !important;
+            }
+            .modal-list-group-item div:last-child {
+                margin-top: 5px;
+            }
+        }
+        /* FIM ESTILOS DO MODAL */
+
+        /* Media Query para Desktop (992px ou mais) */
+>>>>>>> main
         @media (min-width: 992px) {
             .sidebar {
                 display: block;
@@ -360,19 +434,41 @@
                 <div class="card">
                     <h2>Recordes de Peso por Exercício</h2>
                     <ul class="list-group">
-                        <% if (progressosPeso != null && !progressosPeso.isEmpty()) { %>
-                            <% for (ProgressoExercicio pe : progressosPeso) { %>
+                        <% 
+                            final int LIMITE_EXIBICAO_PESO = 5; 
+                            int contadorPeso = 0;
+                        
+                            if (progressosPeso != null && !progressosPeso.isEmpty()) { 
+                                for (ProgressoExercicio pe : progressosPeso) { 
+                                    // Limita a exibição no card
+                                    if (contadorPeso >= LIMITE_EXIBICAO_PESO) break;
+                        %>
                                 <li class="list-group-item">
                                     <strong><%= pe.getNomeExercicio() %></strong>
                                     <span><%= String.format("%.1f kg", pe.getPesoMaximo()) %></span>
                                 </li>
-                            <% } %>
-                        <% } else { %>
+                            <%  
+                                    contadorPeso++;
+                                } 
+                            } else { 
+                            %>
                             <li class="list-group-item">
                                 <span>Registre um treino para ver seu progresso de peso.</span>
                             </li>
                         <% } %>
                     </ul>
+                    <% if (progressosPeso != null && progressosPeso.size() > LIMITE_EXIBICAO_PESO) { %>
+                        <p style="text-align: center; margin-top: 1.5rem;">
+                            <a href="#" class="view-more-link" onclick="openModal('pesoModal'); return false;" 
+                                style="color: var(--primary-color); text-decoration: none; font-weight: 600;">
+                                Ver Mais Recordes (Total: <%= progressosPeso.size() %>)
+                            </a>
+                        </p>
+                    <% } else if (progressosPeso != null && progressosPeso.size() > 0) { %>
+                        <p style="text-align: center; margin-top: 1.5rem; color: var(--text-muted); font-size: 0.9rem;">
+                            Todos os <%= progressosPeso.size() %> recordes exibidos.
+                        </p>
+                    <% } %>
                 </div>
                 
                 <div class="card">
@@ -401,7 +497,7 @@
                         
                         <% if (sessoes.size() > LIMITE_EXIBICAO) { %>
                             <p style="text-align: center; margin-top: 1.5rem;">
-                                <a href="historico-completo.jsp" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">
+                                <a href="#" class="view-more-link" onclick="openModal('historicoModal'); return false;" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">
                                     Ver Mais Histórico (Total: <%= sessoes.size() %>)
                                 </a>
                             </p>
@@ -420,7 +516,52 @@
             <a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a>
             <a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i> Sair</a>
         </nav>
+    </div>
+
+    <div id="pesoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('pesoModal')">&times;</span>
+            <h2>Todos os Recordes de Peso</h2>
+            <ul class="list-group">
+                <% if (progressosPeso != null && !progressosPeso.isEmpty()) { %>
+                    <% for (ProgressoExercicio pe : progressosPeso) { %>
+                        <li class="modal-list-group-item">
+                            <strong><%= pe.getNomeExercicio() %></strong>
+                            <span><%= String.format("%.1f kg", pe.getPesoMaximo()) %></span>
+                        </li>
+                    <% } %>
+                <% } else { %>
+                    <li class="modal-list-group-item">
+                        <span>Nenhum recorde de peso registrado.</span>
+                    </li>
+                <% } %>
+            </ul>
         </div>
+    </div>
+
+    <div id="historicoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('historicoModal')">&times;</span>
+            <h2>Histórico Completo de Treinos</h2>
+            <ul class="list-group">
+                <% if (sessoes != null && !sessoes.isEmpty()) { %>
+                    <% for (Progresso sessao : sessoes) { %>
+                        <li class="modal-list-group-item">
+                            <div style="font-weight: 600;"><%= sessao.getNomeTreino() %></div>
+                            <div style="text-align: right;">
+                                <span style="display: block;">Duração: <strong><%= sessao.getDuracaoMinutos() %> min</strong></span>
+                                <small style="color: var(--text-muted);">Em: <%= sessao.getDataFim().format(dateFormatter) %></small>
+                            </div>
+                        </li>
+                    <% } %>
+                <% } else { %>
+                    <li class="modal-list-group-item">
+                        <span>Nenhum treino concluído registrado.</span>
+                    </li>
+                <% } %>
+            </ul>
+        </div>
+    </div>
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -474,6 +615,8 @@
                     scales: {
                         y: {
                             beginAtZero: true,
+                            // Limite de 30 para o eixo Y, conforme solicitado
+                            max: 30, 
                             grid: {
                                 color: 'rgba(0, 0, 0, 0.05)',
                                 drawBorder: false
@@ -525,6 +668,22 @@
             chartContainer.innerHTML = '<div class="chart-container"><p style="text-align: center; color: #777; margin-top: 5rem;">Ainda não há treinos concluídos para exibir no gráfico.</p></div>';
         }
     });
+
+    // Funções do Modal
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = 'block';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    // Fecha o modal se o usuário clicar fora dele
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+        }
+    }
     </script>
 </body>
 </html>
