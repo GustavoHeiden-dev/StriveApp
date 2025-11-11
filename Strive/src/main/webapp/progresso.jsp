@@ -129,7 +129,8 @@
         }
         .main-content {
             flex: 1;
-            padding: 2rem;
+            /* AJUSTE MOBILE: Padding superior e inferior é 2rem. Laterais usam 1rem */
+            padding: 2rem 1rem; 
             padding-bottom: 100px;
             min-width: 0; 
             width: 100%;
@@ -229,11 +230,12 @@
         .list-group-item span {
             color: var(--text-muted);
         }
+        /* ESTILO PADRONIZADO PARA O BOTTOM NAV */
         .bottom-nav {
             display: flex;
             justify-content: space-around;
             padding: 0.8rem 0;
-            background-color: #f0f0f5;
+            background-color: var(--bg-sidebar); /* Usando variável para consistência */
             border-top: 1px solid #ddd;
             position: fixed;
             bottom: 0;
@@ -287,6 +289,8 @@
                 display: block;
             }
             .main-content {
+                /* No desktop, voltamos a ter 2rem de padding em todos os lados e a margem lateral para o sidebar */
+                padding: 2rem;
                 margin-left: var(--sidebar-width);
                 width: auto;
             }
@@ -294,7 +298,7 @@
                 display: none;
             }
             .progress-grid {
-                /* No Desktop, volta para 2 colunas, mas ajusta o minmax para garantir que o chart/progresso use 2 colunas */
+                /* No Desktop, volta para 2 colunas */
                 grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
             }
             /* Garante que os cards de Consistência e Gráfico usem 2 colunas no desktop */
@@ -380,9 +384,17 @@
                 
                 <div class="card">
                     <h2>Histórico de Treinos</h2>
-                    <% if (sessoes != null && !sessoes.isEmpty()) { %>
+                    <% 
+                        final int LIMITE_EXIBICAO = 5; // Limita a 5 treinos para evitar que a div cresça demais
+                        
+                        if (sessoes != null && !sessoes.isEmpty()) { 
+                            int contador = 0;
+                    %>
                         <ul class="list-group">
-                            <% for (Progresso sessao : sessoes) { %>
+                            <% for (Progresso sessao : sessoes) { 
+                                // Otimização: para o loop após atingir o limite
+                                if (contador >= LIMITE_EXIBICAO) break; 
+                            %>
                                 <li class="list-group-item">
                                     <div style="font-weight: 600;"><%= sessao.getNomeTreino() %></div>
                                     <div style="text-align: right;">
@@ -390,8 +402,19 @@
                                         <small style="color: var(--text-muted);">Em: <%= sessao.getDataFim().format(dateFormatter) %></small>
                                     </div>
                                 </li>
-                            <% } %>
+                            <% 
+                                contador++;
+                            } %>
                         </ul>
+                        
+                        <% if (sessoes.size() > LIMITE_EXIBICAO) { %>
+                            <p style="text-align: center; margin-top: 1.5rem;">
+                                <a href="historico-completo.jsp" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">
+                                    Ver Mais Histórico (Total: <%= sessoes.size() %>)
+                                </a>
+                            </p>
+                        <% } %>
+                        
                     <% } else { %>
                         <p>Você ainda não concluiu nenhum treino. Comece agora!</p>
                     <% } %>
@@ -403,10 +426,10 @@
             <a href="home.jsp"><i class="fas fa-home icon"></i> Home</a>
             <a href="TreinoServlet"><i class="fas fa-dumbbell icon"></i> Treino</a>
             <a href="ProgressoServlet" class="active"><i class="fas fa-chart-line icon"></i> Progresso</a>
-            <li><a href="ConquistasServlet"><i class="fas fa-trophy icon"></i> Conquistas</a></li>
+            <a href="ConquistasServlet"><i class="fas fa-trophy icon"></i> Conquistas</a>
             <a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a>
         </nav>
-    </div>
+        </div>
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -437,7 +460,7 @@
                     return "Inválido"; 
                 }
                 
-                // Formato Mês (ex: Set) - ALTERADO: Removida a concatenação com o ano
+                // Formato Mês (ex: Set)
                 return meses[mesIndex];
             });
             
@@ -505,7 +528,7 @@
                                     const ano = dadosTreinos[index].ano;
                                     const mes = meses[dadosTreinos[index].mes - 1];
                                     return mes + "/" + ano;
-                                },
+                                }, 
                                 label: function(tooltipItem, data) {
                                     return 'Treinos: ' + tooltipItem.formattedValue;
                                 }

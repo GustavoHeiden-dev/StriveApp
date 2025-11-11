@@ -59,15 +59,17 @@ public class ProgressoDAO {
         return lista;
     }
     
+    // MÉTODO AJUSTADO PARA USAR A TABELA SERIE
     public List<ProgressoExercicio> listarProgressoPeso(int idUsuario) {
         List<ProgressoExercicio> recordes = new ArrayList<>();
-        // Substitua 'SUA_CONEXAO' pela sua lógica real de conexão com o banco
-        String sql = "SELECT E.nome, MAX(UE.peso_usado) " +
-                     "FROM UsuarioExercicio UE " +
+        // A nova query junta Serie, UsuarioExercicio (para filtrar pelo usuário) e Exercicio (para obter o nome)
+        String sql = "SELECT E.nome AS nomeExercicio, MAX(S.peso) AS pesoMaximo " +
+                     "FROM Serie S " +
+                     "JOIN UsuarioExercicio UE ON S.id_usuario_exercicio = UE.id_usuario_exercicio " +
                      "JOIN Exercicio E ON UE.id_exercicio = E.id_exercicio " +
-                     "WHERE UE.id_usuario = ? AND UE.peso_usado IS NOT NULL " +
-                     "GROUP BY E.nome " +
-                     "ORDER BY MAX(UE.peso_usado) DESC";
+                     "WHERE UE.id_usuario = ? " + // Filtra pelo usuário logado
+                     "GROUP BY E.nome " +        // Agrupa por nome do exercício
+                     "ORDER BY pesoMaximo DESC"; // Ordena pelo peso máximo
 
         try (Connection conn = ConexaoDB.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -75,9 +77,10 @@ public class ProgressoDAO {
             ps.setInt(1, idUsuario);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    String nome = rs.getString("nome"); // Nome do Exercício
-                    float peso = rs.getFloat(2); // MAX(UE.peso_usado)
+                    String nome = rs.getString("nomeExercicio"); // Alias do SELECT
+                    float peso = rs.getFloat("pesoMaximo");     // Alias do SELECT
 
+                    // Assumindo que ProgressoExercicio tem um construtor (String nome, float peso)
                     recordes.add(new ProgressoExercicio(nome, peso));
                 }
             }

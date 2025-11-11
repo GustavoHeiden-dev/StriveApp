@@ -1,3 +1,4 @@
+
 <%@ page contentType="text/html;charset=UTF-8"
 	import="Modelos.Usuario, java.util.List, Modelos.Exercicio, Modelos.Serie"%>
 <%
