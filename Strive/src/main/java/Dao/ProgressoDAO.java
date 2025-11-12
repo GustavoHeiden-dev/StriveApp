@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Modelos.ContagemMensal;
+import Modelos.DetalheExercicioSerie; // NOVO: Importa o novo modelo
 import Modelos.Progresso;
 import Modelos.ProgressoExercicio;
 import Utils.ConexaoDB;
@@ -29,6 +30,63 @@ public class ProgressoDAO {
             e.printStackTrace();
             return false;
         }
+    }
+    
+    // NOVO MÉTODO 1: Busca os dados básicos de uma sessão pelo ID
+    public Progresso buscarSessaoPorId(int idSessao) {
+        String sql = "SELECT ts.id_sessao, t.nome AS nome_treino, ts.data_fim, ts.duracao_minutos " +
+                     "FROM TreinoSessao ts " +
+                     "JOIN Treino t ON ts.id_treino = t.id_treino " +
+                     "WHERE ts.id_sessao = ?";
+        
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setInt(1, idSessao);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Progresso psessao = new Progresso(); 
+                    psessao.setIdSessao(rs.getInt("id_sessao"));
+                    psessao.setNomeTreino(rs.getString("nome_treino"));
+                    psessao.setDataFim(rs.getTimestamp("data_fim").toLocalDateTime()); 
+                    psessao.setDuracaoMinutos(rs.getInt("duracao_minutos"));
+                    return psessao;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    // NOVO MÉTODO 2: Lista todos os exercícios, repetições e pesos de todas as séries de uma sessão
+    public List<DetalheExercicioSerie> listarDetalhesSessao(int idSessao) {
+        List<DetalheExercicioSerie> detalhes = new ArrayList<>();
+        String sql = "SELECT E.nome AS nomeExercicio, S.repeticoes, S.peso " +
+                     "FROM Serie S " +
+                     "JOIN UsuarioExercicio UE ON S.id_usuario_exercicio = UE.id_usuario_exercicio " +
+                     "JOIN Exercicio E ON UE.id_exercicio = E.id_exercicio " +
+                     "WHERE UE.id_sessao = ? " +
+                     "ORDER BY UE.id_usuario_exercicio ASC, S.data_registro ASC"; // Ordena para agrupar as séries de um mesmo exercício
+
+        try (Connection conn = ConexaoDB.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, idSessao);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    DetalheExercicioSerie detalhe = new DetalheExercicioSerie(
+                        rs.getString("nomeExercicio"),
+                        rs.getInt("repeticoes"),
+                        rs.getFloat("peso")
+                    );
+                    detalhes.add(detalhe);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return detalhes;
     }
     
     public List<Progresso> listarSessoesConcluidas(int idUsuario) {
@@ -112,6 +170,7 @@ public class ProgressoDAO {
         }
         return historico;
     }
+    
     public List<ContagemMensal> listarTreinosPorMes(int idUsuario) {
         List<ContagemMensal> contagens = new ArrayList<>();
         String sql = "SELECT YEAR(data_fim) AS ano, MONTH(data_fim) AS mes, COUNT(id_sessao) AS total_treinos FROM TreinoSessao WHERE id_usuario = ? AND data_fim IS NOT NULL GROUP BY YEAR(data_fim), MONTH(data_fim) ORDER BY ano ASC, mes ASC";

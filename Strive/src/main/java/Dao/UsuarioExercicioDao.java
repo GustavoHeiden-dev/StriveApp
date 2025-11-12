@@ -72,4 +72,29 @@ public class UsuarioExercicioDao {
         }
         return 0;
     }
+    
+    public boolean reabrir(int idUsuario, int idExercicio, int idSessao) {
+        // SQL: Atualiza o registro, definindo o campo 'concluido' como FALSE.
+        // A condição WHERE garante que apenas o registro específico daquela sessão, 
+        // usuário e exercício seja alterado.
+        String sql = "UPDATE UsuarioExercicio SET concluido = FALSE " +
+                     "WHERE id_usuario = ? AND id_exercicio = ? AND id_sessao = ?";
+
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+
+            stmt.setInt(1, idUsuario);
+            stmt.setInt(2, idExercicio);
+            stmt.setInt(3, idSessao);
+
+            int rowsAffected = stmt.executeUpdate();
+            // Retorna true se pelo menos uma linha foi atualizada
+            return rowsAffected > 0; 
+
+        } catch (Exception e) {
+            System.err.println("Erro ao reabrir/desmarcar exercício: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

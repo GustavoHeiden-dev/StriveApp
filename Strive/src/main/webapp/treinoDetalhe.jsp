@@ -1,15 +1,19 @@
 <%@ page contentType="text/html;charset=UTF-8"
-	import="Modelos.Usuario, java.util.List, Modelos.Exercicio, Modelos.Serie"%>
+    import="Modelos.Usuario, java.util.List, Modelos.Exercicio, Modelos.Serie"%>
 <%
+// Garante que o usuário está logado
 Usuario usuario = (Usuario) session.getAttribute("usuario");
 if (usuario == null) {
-	response.sendRedirect("login.jsp");
-	return;
+    response.sendRedirect("login.jsp");
+    return;
 }
+// Carrega os dados necessários do request/sessão
 List<Exercicio> exercicios = (List<Exercicio>) request.getAttribute("exercicios");
 int totalExercicios = exercicios != null ? exercicios.size() : 0;
 int idTreino = (Integer) request.getAttribute("idTreino");
 int idSessao = (Integer) request.getAttribute("idSessao");
+
+// Exemplo: Simulação do estado de conclusão (Você deve substituir esta lógica)
 %>
 <!DOCTYPE html>
 <html>
@@ -19,560 +23,580 @@ int idSessao = (Integer) request.getAttribute("idSessao");
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link
-	href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
-	rel="stylesheet">
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+    rel="stylesheet">
 <link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
+/* ... (Seus estilos CSS existentes, mantidos iguais) ... */
 :root {
-	--primary-color: #6a0dad;
-	--secondary-color: #8A2BE2;
-	--dark-color: #1a1a1a;
-	--light-color: #f8f7ff;
-	--text-color: #333;
-	--white-color: #fff;
-	--success-color: #28a745;
-	--success-light-color: #e9f7ec;
-	--disabled-color: #ccc;
-	--error-color: #dc3545;
-	--sidebar-width: 250px;
-	--border-radius: 12px;
-	--shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    --primary-color: #6a0dad;
+    --secondary-color: #8A2BE2;
+    --dark-color: #1a1a1a;
+    --light-color: #f8f7ff;
+    --text-color: #333;
+    --white-color: #fff;
+    --success-color: #28a745;
+    --success-light-color: #e9f7ec;
+    --disabled-color: #ccc;
+    --error-color: #dc3545;
+    --sidebar-width: 250px;
+    --border-radius: 12px;
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
 * {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-	font-family: 'Poppins', sans-serif;
-	background-color: var(--light-color);
-	color: var(--text-color);
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--light-color);
+    color: var(--text-color);
 }
 
 .dashboard-container {
-	display: flex;
+    display: flex;
 }
 
 .sidebar {
-	width: var(--sidebar-width);
-	background-color: var(--white-color);
-	height: 100vh;
-	position: fixed;
-	left: 0;
-	top: 0;
-	padding: 2rem 1rem;
-	border-right: 1px solid #e0e0e0;
-	display: none;
-	z-index: 1001;
+    width: var(--sidebar-width);
+    background-color: var(--white-color);
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding: 2rem 1rem;
+    border-right: 1px solid #e0e0e0;
+    display: none;
+    z-index: 1001;
 }
 
 .sidebar .logo {
-	font-size: 2rem;
-	font-weight: 700;
-	text-align: center;
-	margin-bottom: 2.5rem;
-	color: var(--primary-color);
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    color: var(--primary-color);
 }
 
 .sidebar .nav-list {
-	list-style: none;
+    list-style: none;
 }
 
 .sidebar .nav-list a {
-	display: flex;
-	align-items: center;
-	gap: 15px;
-	color: #555;
-	font-weight: 600;
-	text-decoration: none;
-	padding: 1rem;
-	border-radius: 8px;
-	margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #555;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
 }
 
 .sidebar .nav-list a:hover, .sidebar .nav-list a.active {
-	background-color: var(--primary-color);
-	color: var(--white-color);
+    background-color: var(--primary-color);
+    color: var(--white-color);
 }
 
 .sidebar .nav-list a .icon {
-	width: 20px;
-	text-align: center;
-}
-
-.main-content {
-	flex: 1;
-	padding: 1rem;
-	padding-bottom: 100px;
-}
-
-.main-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 2rem;
-	flex-wrap: wrap;
-	gap: 1rem;
-}
-
-.main-header h1 {
-	font-size: 2rem;
-	font-weight: 700;
-	color: var(--dark-color);
-}
-
-.progress-counter {
-	background-color: var(--primary-color);
-	color: var(--white-color);
-	padding: 0.5rem 1rem;
-	border-radius: 20px;
-	font-weight: 600;
-}
-
-.exercicio-card {
-	background: var(--white-color);
-	border-radius: var(--border-radius);
-	padding: 1.5rem;
-	box-shadow: var(--shadow);
-	margin-bottom: 1.5rem;
-	border-left: 5px solid var(--primary-color);
-	transition: all 0.4s ease;
-}
-
-.exercicio-card.concluido {
-	border-left-color: var(--success-color);
-	background-color: var(--success-light-color);
-}
-
-.exercicio-card.concluido .exercicio-header h3 {
-	color: var(--success-color);
-	text-decoration: line-through;
-}
-
-.exercicio-card.concluido .grupo-muscular {
-	background-color: var(--success-color);
-}
-
-.exercicio-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: flex-start;
-	margin-bottom: 1rem;
-}
-
-.exercicio-header h3 {
-	margin: 0;
-	color: var(--primary-color);
-}
-
-.grupo-muscular {
-	background: var(--secondary-color);
-	color: white;
-	padding: 4px 10px;
-	border-radius: 20px;
-	font-size: 0.8rem;
-	font-weight: 600;
-	white-space: nowrap;
-}
-
-.exercicio-details p {
-	margin: 0.5rem 0;
-	color: #555;
-}
-
-.btn {
-	display: inline-block;
-	background: var(--primary-color);
-	color: var(--white-color);
-	padding: 10px 20px;
-	border: none;
-	border-radius: 8px;
-	font-weight: 600;
-	text-decoration: none;
-	transition: all 0.3s;
-	cursor: pointer;
-}
-
-.btn:hover {
-	background-color: var(--secondary-color);
-	transform: translateY(-2px);
-}
-
-.btn-success {
-	background-color: var(--success-color);
-}
-
-.finalizar-treino-container {
-	text-align: center;
-	margin-top: 2rem;
-	padding: 2rem;
-	background: var(--white-color);
-	border-radius: var(--border-radius);
-	box-shadow: var(--shadow);
-}
-
-.btn-finalizar {
-	font-size: 1.2rem !important;
-	padding: 15px 30px !important;
-	width: 100%;
-	max-width: 400px;
-}
-
-.btn-finalizar.disabled {
-	background-color: var(--disabled-color);
-	cursor: not-allowed;
-	color: #888;
-}
-
-.btn-finalizar.disabled:hover {
-	transform: none;
-}
-
-.bottom-nav {
-	display: flex;
-	justify-content: space-around;
-	padding: 0.8rem 0;
-	background-color: var(--white-color);
-	box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-	position: fixed;
-	bottom: 0;
-	left: 0;
-	width: 100%;
-	z-index: 100;
-}
-
-.bottom-nav a {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	text-decoration: none;
-	color: #888;
-	font-size: 0.7rem;
-	gap: 4px;
-    flex-basis: 0;
-    flex-grow: 1;
+    width: 20px;
     text-align: center;
 }
 
+.main-content {
+    flex: 1;
+    padding: 1rem;
+    padding-bottom: 100px;
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.main-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--dark-color);
+}
+
+.progress-counter {
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.exercicio-card {
+    background: var(--white-color);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+    border-left: 5px solid var(--primary-color);
+    transition: all 0.4s ease;
+}
+
+.exercicio-card.concluido {
+    border-left-color: var(--success-color);
+    background-color: var(--success-light-color);
+}
+
+.exercicio-card.concluido .exercicio-header h3 {
+    color: var(--success-color);
+}
+
+.exercicio-card.concluido .grupo-muscular {
+    background-color: var(--success-color);
+}
+
+.exercicio-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.exercicio-header h3 {
+    margin: 0;
+    color: var(--primary-color);
+}
+
+.exercicio-card.concluido .exercicio-header h3 {
+    color: var(--success-color);
+}
+
+.grupo-muscular {
+    background: var(--secondary-color);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.exercicio-details p {
+    margin: 0.5rem 0;
+    color: #555;
+}
+
+.btn {
+    display: inline-block;
+    background: var(--primary-color);
+    color: var(--white-color);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
+.btn-reabrir {
+    background-color: var(--error-color);
+}
+
+.btn-reabrir:hover {
+    background-color: #c82333;
+}
+
+
+.btn-success {
+    background-color: var(--success-color);
+}
+
+.finalizar-treino-container {
+    text-align: center;
+    margin-top: 2rem;
+    padding: 2rem;
+    background: var(--white-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.btn-finalizar {
+    font-size: 1.2rem !important;
+    padding: 15px 30px !important;
+    width: 100%;
+    max-width: 400px;
+}
+
+.btn-finalizar.disabled {
+    background-color: var(--disabled-color);
+    cursor: not-allowed;
+    color: #888;
+}
+
+.btn-finalizar.disabled:hover {
+    transform: none;
+}
+
+.bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    padding: 0.8rem 0;
+    background-color: var(--white-color);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+}
+
+.bottom-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #888;
+    font-size: 0.7rem;
+    gap: 4px;
+}
+
 .bottom-nav a .icon {
-	font-size: 1.4rem;
+    font-size: 1.4rem;
 }
 
 .bottom-nav a.active, .bottom-nav a:hover {
-	color: var(--primary-color);
+    color: var(--primary-color);
 }
 
 .series-section {
-	margin-top: 1.5rem;
-	padding-top: 1.5rem;
-	border-top: 1px solid #eee;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #eee;
 }
 
 .series-list {
-	list-style: none;
-	margin-bottom: 1.5rem;
+    list-style: none;
+    margin-bottom: 1.5rem;
 }
 
+/* ESTILIZAÇÃO DAS SÉRIES JÁ ADICIONADAS */
 .serie-item {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	background-color: var(--light-color);
-	padding: 0.75rem 1rem;
-	border-radius: 6px;
-	margin-bottom: 0.5rem;
-	font-weight: 500;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--light-color);
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
 }
 
 .serie-item div {
-	display: flex;
-	gap: 2rem;
-	flex-grow: 1;
-	align-items: center;
+    display: flex;
+    gap: 2rem; 
+    flex-grow: 1;
+    align-items: center;
 }
 
 .serie-item span {
-	background-color: var(--white-color);
-	padding: 6px 12px;
-	border-radius: 8px;
-	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	color: #666;
-	white-space: nowrap;
+    background-color: var(--white-color); 
+    padding: 6px 12px;
+    border-radius: 8px; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666; 
+    white-space: nowrap; 
 }
 
 .serie-item span i {
-	color: var(--primary-color);
-	font-size: 1.1rem;
+    color: var(--primary-color);
+    font-size: 1.1rem;
 }
 
 .serie-item span strong {
-	font-size: 1.1rem;
-	font-weight: 700;
-	color: var(--dark-color);
+    font-size: 1.1rem; 
+    font-weight: 700;
+    color: var(--dark-color); 
 }
+/* FIM DA ESTILIZAÇÃO DAS SÉRIES JÁ ADICIONADAS */
 
+
+/* INÍCIO DA ESTILIZAÇÃO DO FORMULÁRIO DE ADIÇÃO DE SÉRIE */
 .serie-form .form-row {
-	display: grid;
-	grid-template-columns: 1fr 1fr auto auto;
-	gap: 1rem;
-	align-items: flex-end;
+    display: grid;
+    grid-template-columns: 1fr 1fr auto auto;
+    gap: 1rem;
+    align-items: flex-end; 
 }
 
 .form-group {
-	margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .serie-form .form-group label {
-	font-size: 0.95rem;
-	margin-bottom: 0.25rem;
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	font-weight: 600;
-	color: var(--dark-color);
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+    display: flex; 
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: var(--dark-color);
 }
 
 .serie-form .form-group label i {
-	color: var(--primary-color);
+    color: var(--primary-color);
 }
 
 .serie-form .form-group input {
-	width: 100%;
-	padding: 12px;
-	border: 2px solid #ddd;
-	border-radius: 10px;
-	font-size: 1.0rem;
-	font-family: 'Poppins', sans-serif;
-	transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    padding: 12px; 
+    border: 2px solid #ddd; 
+    border-radius: 10px; 
+    font-size: 1.0rem;
+    font-family: 'Poppins', sans-serif;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .serie-form .form-group input:focus {
-	border-color: var(--secondary-color);
-	box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.1);
-	outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.1); 
+    outline: none;
 }
 
 .serie-form .form-group button {
-	padding: 10px 20px;
-	font-size: 1rem;
+    padding: 10px 20px; 
+    font-size: 1rem;
 }
+/* FIM DA ESTILIZAÇÃO DO FORMULÁRIO DE ADIÇÃO DE SÉRIE */
 
 .btn-concluir-exercicio {
-	background-color: var(--success-color);
+    background-color: var(--success-color);
 }
 
 .serie-error-message {
-	color: var(--error-color);
-	font-weight: 500;
-	margin-top: 0.5rem;
-	height: 1em;
+    color: var(--error-color);
+    font-weight: 500;
+    margin-top: 0.5rem;
+    height: 1em;
 }
 
 .btn-remover-serie {
-	background: none;
-	border: none;
-	color: var(--error-color);
-	cursor: pointer;
-	font-size: 1rem;
-	padding: 0 5px;
-	line-height: 1;
-	transition: color 0.2s;
-	margin-left: 10px;
+    background: none;
+    border: none;
+    color: var(--error-color);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0 5px;
+    line-height: 1;
+    transition: color 0.2s;
+    margin-left: 10px;
 }
 
 .btn-remover-serie:hover {
-	color: var(--dark-color);
+    color: var(--dark-color);
 }
 
 @media ( max-width : 768px) {
-	.main-header h1 {
-		font-size: 1.8rem;
-	}
-	.serie-form .form-row {
-		grid-template-columns: 1fr;
-	}
-	.form-group {
-		margin-bottom: 1rem;
-	}
+    .main-header h1 {
+        font-size: 1.8rem;
+    }
+    .serie-form .form-row {
+        grid-template-columns: 1fr;
+    }
+    .form-group {
+        margin-bottom: 1rem;
+    }
 }
 
 @media ( min-width : 992px) {
-	.sidebar {
-		display: block;
-	}
-	.main-content {
-		margin-left: var(--sidebar-width);
-		padding: 2rem;
-	}
-	.main-header h1 {
-		font-size: 3rem;
-	}
-	.bottom-nav {
-		display: none;
-	}
+    .sidebar {
+        display: block;
+    }
+    .main-content {
+        margin-left: var(--sidebar-width);
+        padding: 2rem;
+    }
+    .main-header h1 {
+        font-size: 3rem;
+    }
+    .bottom-nav {
+        display: none;
+    }
 }
 </style>
 </head>
 <body>
-	<div class="dashboard-container">
-		<aside class="sidebar">
-			<div class="logo">STRIVE</div>
-			<ul class="nav-list">
-				<li><a href="home.jsp"><i class="fas fa-home icon"></i> Home</a></li>
-				<li><a href="TreinoServlet" class="active"><i
-						class="fas fa-dumbbell icon"></i> Treino</a></li>
-				<li><a href="editarperfil.jsp"><i class="fas fa-user icon"></i>
-						Perfil</a></li>
-				<li><a href="SairServlet"><i
-						class="fas fa-sign-out-alt icon"></i> Sair</a></li>
-			</ul>
-		</aside>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="logo">STRIVE</div>
+            <ul class="nav-list">
+                <li><a href="home.jsp"><i class="fas fa-home icon"></i> Home</a></li>
+                <li><a href="TreinoServlet" class="active"><i class="fas fa-dumbbell icon"></i> Treino</a></li>
+         	
+                <li><a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a></li>
+            </ul>
+        </aside>
 
-		<main class="main-content">
-			<div class="main-header">
-				<div>
-					<h1>Executando Treino</h1>
-					<p>Adicione suas séries e conclua os exercícios.</p>
-				</div>
-				<div class="progress-counter" id="timerDisplay"
-					style="margin-right: 1rem;">
-					<i class="fas fa-clock"></i> 00:00:00
-				</div>
-				<div class="progress-counter" id="progressCounter">
-					<i class="fas fa-dumbbell"></i> <span id="completedCount">0</span>/<%=totalExercicios%>
-					Concluídos
-				</div>
-			</div>
+        <main class="main-content">
+            <div class="main-header">
+                <div>
+                    <h1>Executando Treino</h1>
+                    <p>Adicione suas séries e conclua os exercícios.</p>
+                </div>
+                <div class="progress-counter" id="timerDisplay" style="margin-right: 1rem;">
+                    <i class="fas fa-clock"></i> 00:00:00
+                </div>
+                <div class="progress-counter" id="progressCounter">
+                    <i class="fas fa-dumbbell"></i> <span id="completedCount">0</span>/<%=totalExercicios%>
+                    Concluídos
+                </div>
+            </div>
 
-			<%
-			if (exercicios != null && !exercicios.isEmpty()) {
-			%>
-			<%
-			for (Exercicio ex : exercicios) {
-			%>
-			<div class="exercicio-card" id="card-<%=ex.getId()%>">
-				<div class="exercicio-header">
-					<h3><%=ex.getNome()%></h3>
-					<span class="grupo-muscular"><%=ex.getGrupoMuscular()%></span>
-				</div>
-				<div class="exercicio-details">
-					<p>
-						<strong>Meta Sugerida:</strong>
-						<%=ex.getRepeticoes()%></p>
-				</div>
+            <%
+            if (exercicios != null && !exercicios.isEmpty()) {
+            %>
+            <%
+            int initialCompletedCount = 0; 
 
-				<div class="series-section">
-					<h4>Séries Realizadas</h4>
-					<ul class="series-list" id="series-list-<%=ex.getId()%>">
-						<%
-						if (ex.getSeries() != null && !ex.getSeries().isEmpty()) {
-							for (Serie s : ex.getSeries()) {
-						%>
-						<li class="serie-item" data-id-serie="<%=s.getId()%>">
-							<div>
-								<span><i class="fas fa-sync-alt"></i> <strong><%=s.getRepeticoes()%></strong>
-									rep</span> <span><i class="fas fa-weight-hanging"></i> <strong><%=s.getPeso()%></strong>
-									kg</span>
-							</div>
-							<button type="button" class="btn-remover-serie"
-								data-id-serie="<%=s.getId()%>"
-								data-exercicio-id="<%=ex.getId()%>">
-								<i class="fas fa-times"></i>
-							</button>
-						</li>
-						<%
-						}
-						} else {
-						%>
-						<li class="no-series"
-							style="text-align: center; color: var(--text-muted);">Nenhuma
-							série registrada.</li>
-						<%
-						}
-						%>
-					</ul>
+            for (Exercicio ex : exercicios) {
+                boolean isConcluido = false; // MUDAR ISSO!
+            %>
+            <div class="exercicio-card <%= isConcluido ? "concluido" : "" %>" id="card-<%=ex.getId()%>" data-concluido="<%= isConcluido ? "true" : "false" %>">
+                <div class="exercicio-header">
+                    <h3><%=ex.getNome()%></h3>
+                    <span class="grupo-muscular"><%=ex.getGrupoMuscular()%></span>
+                </div>
+                <div class="exercicio-details">
+                    <p>
+                        <strong>Meta Sugerida:</strong>
+                        <%=ex.getRepeticoes()%></p>
+                </div>
 
-					<form class="serie-form" data-exercicio-id="<%=ex.getId()%>">
-						<input type="hidden" name="idExercicio" value="<%=ex.getId()%>">
-						<input type="hidden" name="idSessao" value="<%=idSessao%>">
-						<div class="form-row">
-							<div class="form-group">
-								<label><i class="fas fa-sync-alt"></i> Repetições</label> <input
-									type="number" name="repeticoes" placeholder="12" required>
-							</div>
-							<div class="form-group">
-								<label><i class="fas fa-weight-hanging"></i> Peso (kg)</label>
-								<input type="number" step="0.5" name="peso" placeholder="50.5"
-									required>
-							</div>
-							<div class="form-group">
-								<button type="submit" class="btn">
-									<i class="fas fa-plus"></i> Adicionar Série
-								</button>
-							</div>
-							<div class="form-group">
-								<button type="button" class="btn btn-concluir-exercicio"
-									data-exercicio-id="<%=ex.getId()%>">
-									<i class="fas fa-check"></i> Concluir
-								</button>
-							</div>
-						</div>
-						<div class="serie-error-message" id="error-<%=ex.getId()%>"></div>
-					</form>
-				</div>
-			</div>
-			<%
-			}
-			%>
+                <div class="series-section">
+                    <h4>Séries Realizadas</h4>
+                    <ul class="series-list" id="series-list-<%=ex.getId()%>">
+                        <%
+                        if (ex.getSeries() != null && !ex.getSeries().isEmpty()) {
+                            for (Serie s : ex.getSeries()) {
+                        %>
+                        <li class="serie-item" data-id-serie="<%=s.getId()%>">
+                            <div>
+                                <span><i class="fas fa-sync-alt"></i> <strong><%=s.getRepeticoes()%></strong> rep</span>
+                                <span><i class="fas fa-weight-hanging"></i> <strong><%=s.getPeso()%></strong> kg</span>
+                            </div>
+                            <button type="button" class="btn-remover-serie" 
+                                data-id-serie="<%=s.getId()%>"
+                                data-exercicio-id="<%=ex.getId()%>">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </li>
+                        <%
+                        }
+                        } else {
+                        %>
+                        <li class="no-series"
+                            style="text-align: center; color: var(--text-muted);">Nenhuma
+                            série registrada.</li>
+                        <%
+                        }
+                        %>
+                    </ul>
 
-			<div class="finalizar-treino-container">
-				<h2>Tudo pronto?</h2>
-				<p>Finalize sua sessão para salvar seu progresso.</p>
-				<form action="FinalizarTreinoServlet" method="post"
-					id="finalizarTreinoForm">
-					<input type="hidden" name="idSessao" value="<%=idSessao%>">
-					<input type="hidden" name="idTreino" value="<%=idTreino%>">
-					<input type="hidden" name="duracaoTreino" id="duracaoTreinoInput">
-					<button type="submit" id="finalizarBtn"
-						class="btn btn-success btn-finalizar disabled">
-						<i class="fas fa-flag-checkered"></i> Finalizar Treino
-					</button>
-				</form>
-			</div>
-			<%
-			} else {
-			%>
-			<div class="card">
-				<h2>Nenhum Exercício</h2>
-				<p>Este treino ainda não possui exercícios cadastrados.</p>
-			</div>
-			<%
-			}
-			%>
+                    <form class="serie-form" data-exercicio-id="<%=ex.getId()%>">
+                        <input type="hidden" name="idExercicio" value="<%=ex.getId()%>">
+                        <input type="hidden" name="idSessao" value="<%=idSessao%>">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i class="fas fa-sync-alt"></i> Repetições</label> 
+                                <input type="number" name="repeticoes"
+                                    placeholder="12" required <%= isConcluido ? "disabled" : "" %>>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-weight-hanging"></i> Peso (kg)</label> 
+                                <input type="number" step="0.5"
+                                    name="peso" placeholder="50.5" required <%= isConcluido ? "disabled" : "" %>>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn" <%= isConcluido ? "disabled" : "" %>>
+                                    <i class="fas fa-plus"></i> Adicionar Série
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <button type="button" 
+                                    class="btn btn-concluir-exercicio <%= isConcluido ? "btn-reabrir" : "" %>"
+                                    data-exercicio-id="<%=ex.getId()%>"
+                                    data-action="<%= isConcluido ? "reabrir" : "concluir" %>">
+                                    <% if (isConcluido) { %>
+                                        <i class="fas fa-undo"></i> Reabrir
+                                    <% } else { %>
+                                        <i class="fas fa-check"></i> Concluir
+                                    <% } %>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="serie-error-message" id="error-<%=ex.getId()%>"></div>
+                    </form>
+                </div>
+            </div>
+            <%
+            }
+            %>
 
-			<a href="TreinoServlet" class="btn" style="margin-top: 2rem;">Voltar
-				para a Lista de Treinos</a>
-		</main>
+            <div class="finalizar-treino-container">
+                <h2>Tudo pronto?</h2>
+                <p>Finalize sua sessão para salvar seu progresso.</p>
+                <form action="FinalizarTreinoServlet" method="post"
+                    id="finalizarTreinoForm">
+                    <input type="hidden" name="idSessao" value="<%=idSessao%>">
+                    <input type="hidden" name="idTreino" value="<%=idTreino%>">
+                    <input type="hidden" name="duracaoTreino" id="duracaoTreinoInput">
+                    <button type="submit" id="finalizarBtn"
+                        class="btn btn-success btn-finalizar disabled">
+                        <i class="fas fa-flag-checkered"></i> Finalizar Treino
+                    </button>
+                </form>
+            </div>
+            <%
+            } else {
+            %>
+            <div class="card">
+                <h2>Nenhum Exercício</h2>
+                <p>Este treino ainda não possui exercícios cadastrados.</p>
+            </div>
+            <%
+            }
+            %>
 
-		<nav class="bottom-nav">
-			<a href="home.jsp"><i class="fas fa-home icon"></i> Home</a> <a
-				href="TreinoServlet" class="active"><i
-				class="fas fa-dumbbell icon"></i> Treino</a> <a
-				href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a>
-			<a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i>
-				Sair</a>
-		</nav>
-	</div>
+            <a href="TreinoServlet" class="btn" style="margin-top: 2rem;">Voltar
+                para a Lista de Treinos</a>
+        </main>
 
-	<script>
+        <nav class="bottom-nav">
+            <a href="home.jsp"><i class="fas fa-home icon"></i> Home</a> <a
+                href="TreinoServlet" class="active"><i
+                class="fas fa-dumbbell icon"></i> Treino</a> 
+                <a
+                href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a>
+        </nav>
+    </div>
+
+    <script>
         document.addEventListener('DOMContentLoaded', () => {
             
+            // --- Timer Logic ---
             let seconds = 0;
             let minutes = 0;
             let hours = 0;
@@ -605,23 +629,40 @@ body {
             finalizarTreinoForm.addEventListener('submit', function(event) {
                 clearInterval(timerInterval); 
             });
+            // --------------------------------
 
 
-            let completedCount = 0;
+            // --- Progress Counter Logic ---
+            let completedCount = 0; 
             const totalExercicios = <%=totalExercicios%>;
             const completedCountSpan = document.getElementById('completedCount');
             const finalizarBtn = document.getElementById('finalizarBtn');
             finalizarBtn.disabled = true;
 
-            function updateProgress() {
+            document.querySelectorAll('.exercicio-card[data-concluido="true"]').forEach(() => {
                 completedCount++;
+            });
+            completedCountSpan.textContent = completedCount;
+            if (completedCount >= 1) { 
+                finalizarBtn.classList.remove('disabled');
+                finalizarBtn.disabled = false;
+            }
+
+            function updateProgress(delta) {
+                completedCount += delta;
                 completedCountSpan.textContent = completedCount;
                 if (completedCount >= 1) { 
                     finalizarBtn.classList.remove('disabled');
                     finalizarBtn.disabled = false;
+                } else {
+                    finalizarBtn.classList.add('disabled');
+                    finalizarBtn.disabled = true;
                 }
             }
+            // ------------------------------
 
+
+            // --- Adicionar/Remover Série Logic ---
             function handleDeleteSerie(event) {
                 const button = event.currentTarget;
                 const idSerie = button.dataset.idSerie;
@@ -629,9 +670,7 @@ body {
                 const serieItem = button.closest('.serie-item');
                 const seriesList = document.getElementById('series-list-' + exercicioId);
 
-                if (!confirm('Tem certeza que deseja excluir esta série?')) {
-                    return;
-                }
+                // REMOVIDO: if (!confirm('Tem certeza que deseja excluir esta série?')) { return; }
                 
                 const params = new URLSearchParams();
                 params.append('idSerie', idSerie);
@@ -643,8 +682,10 @@ body {
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
+                        // REMOÇÃO IMEDIATA SEM CONFIRMAÇÃO
                         serieItem.remove();
                         
+                        // Adiciona a mensagem de "Nenhuma série" se a lista ficar vazia
                         if (seriesList.children.length === 0) {
                             const noSeriesMsg = document.createElement('li');
                             noSeriesMsg.className = 'no-series';
@@ -654,12 +695,13 @@ body {
                         }
 
                     } else {
+                        // EXIBE ALERTA APENAS EM CASO DE ERRO
                         alert('Erro ao remover a série: ' + data.message);
                     }
                 })
                 .catch(error => {
                     console.error('Erro no fetch de remoção:', error);
-                    alert('Não foi possível remover a série.');
+                    alert('Não foi possível remover a série devido a um erro de comunicação.');
                 });
             }
 
@@ -732,39 +774,97 @@ body {
                     });
                 });
             });
+            // -------------------------------------------
 
+
+            // --- Concluir/Reabrir Logic (FIXED) ---
             document.querySelectorAll('.btn-concluir-exercicio').forEach(button => {
-                button.addEventListener('click', function(event) {
+                button.addEventListener('click', function() {
                     const exercicioId = this.dataset.exercicioId;
                     const card = document.getElementById('card-' + exercicioId);
+                    const form = card.querySelector('.serie-form');
+                    const action = this.dataset.action;
+                    const errorMessageDiv = document.getElementById('error-' + exercicioId);
                     
                     const params = new URLSearchParams();
                     params.append('idExercicio', exercicioId);
                     params.append('idSessao', '<%=idSessao%>');
+
+                    let url;
                     
-                    fetch('MarcarExercicioServlet', {
+                    if (action === 'concluir') {
+                        // 1. VERIFICA SE AO MENOS UMA SÉRIE FOI ADICIONADA (VERIFICAÇÃO ESSENCIAL)
+                        const seriesList = document.getElementById('series-list-' + exercicioId);
+                        const seriesItems = seriesList.querySelectorAll('.serie-item');
+                        
+                        if (seriesItems.length === 0) {
+                             errorMessageDiv.textContent = 'É necessário adicionar pelo menos uma série antes de concluir o exercício.';
+                             return; 
+                        }
+                        
+                        // 2. PEGA OS VALORES DOS INPUTS, mas REMOVE A VALIDAÇÃO DE PREENCHIMENTO
+                        const repeticoesInput = form.querySelector('input[name="repeticoes"]');
+                        const pesoInput = form.querySelector('input[name="peso"]');
+                        
+                        url = 'MarcarExercicioServlet';
+                        // Os valores são enviados (podem ser strings vazias se não preenchidos)
+                        params.append('repeticoesFeitas', repeticoesInput.value);
+                        params.append('pesoUsado', pesoInput.value);
+
+                    } else {
+                        // Ação de Reabrir
+                        url = 'ReabrirExercicioServlet';
+                    }
+                    
+                    fetch(url, {
                         method: 'POST',
                         body: params
                     })
-                    .then(response => response.ok ? response.json() : Promise.reject('Erro de rede'))
+                    .then(response => response.ok ? response.json() : Promise.reject('Erro de rede ou Servlet indisponível'))
                     .then(data => {
+                        errorMessageDiv.textContent = '';
                         if (data.status === 'success') {
-                            card.classList.add('concluido');
-                            card.querySelectorAll('.serie-form input, .serie-form button, .btn-concluir-exercicio').forEach(el => {
-                                el.disabled = true;
-                            });
-                            this.innerHTML = '<i class="fas fa-check-circle"></i> Concluído';
-                            updateProgress();
+                            
+                            if (action === 'concluir') {
+                                // Ação de Concluir (Sucesso)
+                                card.classList.add('concluido');
+                                card.setAttribute('data-concluido', 'true');
+                                form.querySelectorAll('input, button').forEach(el => { 
+                                    if(el.type !== 'button') el.disabled = true;
+                                });
+                                
+                                this.innerHTML = '<i class="fas fa-undo"></i> Reabrir';
+                                this.classList.add('btn-reabrir');
+                                this.classList.remove('btn-success');
+                                this.dataset.action = 'reabrir';
+                                updateProgress(1);
+                                
+                            } else {
+                                // Ação de Reabrir (Sucesso)
+                                card.classList.remove('concluido');
+                                card.setAttribute('data-concluido', 'false');
+                                form.querySelectorAll('input, button').forEach(el => { 
+                                    el.disabled = false;
+                                });
+                                
+                                this.innerHTML = '<i class="fas fa-check"></i> Concluir';
+                                this.classList.remove('btn-reabrir');
+                                this.classList.add('btn-success');
+                                this.dataset.action = 'concluir';
+                                updateProgress(-1);
+                            }
+
                         } else {
-                            alert('Erro ao concluir o exercício: 'Ocorreu um erro ao marcar o exercício como concluído.' + data.message);
+                            errorMessageDiv.textContent = 'Erro ao processar: ' + data.message;
                         }
                     })
                     .catch(error => {
                         console.error('Erro no fetch:', error);
-                        alert('Não foi possível concluir o exercício. Verifique sua conexão.');
+                        errorMessageDiv.textContent = 'Não foi possível comunicar com o servidor.';
                     });
                 });
             });
+            // ----------------------------------------------------
             
         });
     </script>
