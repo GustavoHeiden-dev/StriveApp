@@ -13,7 +13,11 @@ int totalExercicios = exercicios != null ? exercicios.size() : 0;
 int idTreino = (Integer) request.getAttribute("idTreino"); 
 int idSessao = (Integer) request.getAttribute("idSessao"); 
  
-// Exemplo: Simulação do estado de conclusão (Você deve substituir esta lógica) 
+// ====================================================== 
+// == CORREÇÃO AQUI == 
+// Declarar a variável no escopo da página (no topo)
+int initialCompletedCount = 0;  
+// ====================================================== 
 %> 
 <!DOCTYPE html> 
 <html> 
@@ -269,6 +273,9 @@ body {
     color: #888; 
     font-size: 0.7rem; 
     gap: 4px; 
+    flex-basis: 0;
+    flex-grow: 1;
+    text-align: center;
 } 
  
 .bottom-nav a .icon { 
@@ -290,7 +297,6 @@ body {
     margin-bottom: 1.5rem; 
 } 
  
-/* ESTILIZAÇÃO DAS SÉRIES JÁ ADICIONADAS */ 
 .serie-item { 
     display: flex; 
     justify-content: space-between; 
@@ -331,10 +337,7 @@ body {
     font-weight: 700; 
     color: var(--dark-color);  
 } 
-/* FIM DA ESTILIZAÇÃO DAS SÉRIES JÁ ADICIONADAS */ 
  
- 
-/* INÍCIO DA ESTILIZAÇÃO DO FORMULÁRIO DE ADIÇÃO DE SÉRIE */ 
 .serie-form .form-row { 
     display: grid; 
     grid-template-columns: 1fr 1fr auto auto; 
@@ -380,7 +383,6 @@ body {
     padding: 10px 20px;  
     font-size: 1rem; 
 } 
-/* FIM DA ESTILIZAÇÃO DO FORMULÁRIO DE ADIÇÃO DE SÉRIE */ 
  
 .btn-concluir-exercicio { 
     background-color: var(--success-color); 
@@ -407,6 +409,11 @@ body {
  
 .btn-remover-serie:hover { 
     color: var(--dark-color); 
+} 
+ 
+/* Esta regra CSS já esconde o botão visualmente */
+.exercicio-card.concluido .btn-remover-serie { 
+    display: none; 
 } 
  
 @media ( max-width : 768px) { 
@@ -445,8 +452,8 @@ body {
             <ul class="nav-list"> 
                 <li><a href="home.jsp"><i class="fas fa-home icon"></i> Home</a></li> 
                 <li><a href="TreinoServlet" class="active"><i class="fas fa-dumbbell icon"></i> Treino</a></li> 
-         	 
-                <li><a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a></li> 
+                <li><a href="PerfilServlet"><i class="fas fa-user icon"></i> Perfil</a></li> 
+                <li><a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i> Sair</a></li> 
             </ul> 
         </aside> 
  
@@ -467,12 +474,12 @@ body {
  
             <% 
             if (exercicios != null && !exercicios.isEmpty()) { 
-            %> 
-            <% 
-            int initialCompletedCount = 0;  
- 
-            for (Exercicio ex : exercicios) { 
-                boolean isConcluido = false; // MUDAR ISSO! 
+                // A variável 'initialCompletedCount' agora é incrementada aqui, mas foi declarada no topo
+                for (Exercicio ex : exercicios) { 
+                    boolean isConcluido = ex.isConcluido(); 
+                    if(isConcluido) { 
+                        initialCompletedCount++; 
+                    } 
             %> 
             <div class="exercicio-card <%= isConcluido ? "concluido" : "" %>" id="card-<%=ex.getId()%>" data-concluido="<%= isConcluido ? "true" : "false" %>"> 
                 <div class="exercicio-header"> 
@@ -536,7 +543,7 @@ body {
                             </div> 
                             <div class="form-group"> 
                                 <button type="button"  
-                                    class="btn btn-concluir-exercicio <%= isConcluido ? "btn-reabrir" : "" %>" 
+                                    class="btn btn-concluir-exercicio <%= isConcluido ? "btn-reabrir" : "btn-success" %>" 
                                     data-exercicio-id="<%=ex.getId()%>" 
                                     data-action="<%= isConcluido ? "reabrir" : "concluir" %>"> 
                                     <% if (isConcluido) { %> 
@@ -585,11 +592,10 @@ body {
         </main> 
  
         <nav class="bottom-nav"> 
-            <a href="home.jsp"><i class="fas fa-home icon"></i> Home</a> <a 
-                href="TreinoServlet" class="active"><i 
-                class="fas fa-dumbbell icon"></i> Treino</a>  
-                <a 
-                href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a> 
+            <a href="home.jsp"><i class="fas fa-home icon"></i> Home</a> 
+            <a href="TreinoServlet" class="active"><i class="fas fa-dumbbell icon"></i> Treino</a>  
+            <a href="PerfilServlet"><i class="fas fa-user icon"></i> Perfil</a> 
+            <a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i> Sair</a> 
         </nav> 
     </div> 
  
@@ -633,15 +639,13 @@ body {
  
  
             // --- Progress Counter Logic --- 
-            let completedCount = 0;  
+            let completedCount = <%= initialCompletedCount %>; // Usando o valor calculado pelo JSP no topo
             const totalExercicios = <%=totalExercicios%>; 
             const completedCountSpan = document.getElementById('completedCount'); 
             const finalizarBtn = document.getElementById('finalizarBtn'); 
             finalizarBtn.disabled = true; 
  
-            document.querySelectorAll('.exercicio-card[data-concluido="true"]').forEach(() => { 
-                completedCount++; 
-            }); 
+            // Define o estado inicial do contador e do botão
             completedCountSpan.textContent = completedCount; 
             if (completedCount >= 1) {  
                 finalizarBtn.classList.remove('disabled'); 
@@ -665,13 +669,24 @@ body {
             // --- Adicionar/Remover Série Logic --- 
             function handleDeleteSerie(event) { 
                 const button = event.currentTarget; 
+                
+                // ====================================================== 
+                // == INÍCIO DA CORREÇÃO == 
+                // ====================================================== 
+                const card = button.closest('.exercicio-card'); 
+                if (card && card.dataset.concluido === 'true') { 
+                    // Se o card está concluído, não faz nada. 
+                    return; 
+                } 
+                // ====================================================== 
+                // == FIM DA CORREÇÃO == 
+                // ====================================================== 
+                 
                 const idSerie = button.dataset.idSerie; 
                 const exercicioId = button.dataset.exercicioId; 
                 const serieItem = button.closest('.serie-item'); 
                 const seriesList = document.getElementById('series-list-' + exercicioId); 
  
-                // REMOVIDO: if (!confirm('Tem certeza que deseja excluir esta série?')) { return; } 
-                 
                 const params = new URLSearchParams(); 
                 params.append('idSerie', idSerie); 
                  
@@ -682,10 +697,8 @@ body {
                 .then(response => response.json()) 
                 .then(data => { 
                     if (data.status === 'success') { 
-                        // REMOÇÃO IMEDIATA SEM CONFIRMAÇÃO 
                         serieItem.remove(); 
                          
-                        // Adiciona a mensagem de "Nenhuma série" se a lista ficar vazia 
                         if (seriesList.children.length === 0) { 
                             const noSeriesMsg = document.createElement('li'); 
                             noSeriesMsg.className = 'no-series'; 
@@ -695,7 +708,6 @@ body {
                         } 
  
                     } else { 
-                        // EXIBE ALERTA APENAS EM CASO DE ERRO 
                         alert('Erro ao remover a série: ' + data.message); 
                     } 
                 }) 
@@ -705,6 +717,7 @@ body {
                 }); 
             } 
  
+            // Event listener delegado para os botões de remover
             document.addEventListener('click', function(event) { 
                 const targetButton = event.target.closest('.btn-remover-serie'); 
                 if (targetButton) { 
@@ -777,7 +790,7 @@ body {
             // ------------------------------------------- 
  
  
-            // --- Concluir/Reabrir Logic (FIXED) --- 
+            // --- Concluir/Reabrir Logic --- 
             document.querySelectorAll('.btn-concluir-exercicio').forEach(button => { 
                 button.addEventListener('click', function() { 
                     const exercicioId = this.dataset.exercicioId; 
@@ -793,7 +806,6 @@ body {
                     let url; 
                      
                     if (action === 'concluir') { 
-                        // 1. VERIFICA SE AO MENOS UMA SÉRIE FOI ADICIONADA (VERIFICAÇÃO ESSENCIAL) 
                         const seriesList = document.getElementById('series-list-' + exercicioId); 
                         const seriesItems = seriesList.querySelectorAll('.serie-item'); 
                          
@@ -802,17 +814,14 @@ body {
                              return;  
                         } 
                          
-                        // 2. PEGA OS VALORES DOS INPUTS, mas REMOVE A VALIDAÇÃO DE PREENCHIMENTO 
                         const repeticoesInput = form.querySelector('input[name="repeticoes"]'); 
                         const pesoInput = form.querySelector('input[name="peso"]'); 
                          
                         url = 'MarcarExercicioServlet'; 
-                        // Os valores são enviados (podem ser strings vazias se não preenchidos) 
                         params.append('repeticoesFeitas', repeticoesInput.value); 
                         params.append('pesoUsado', pesoInput.value); 
  
                     } else { 
-                        // Ação de Reabrir 
                         url = 'ReabrirExercicioServlet'; 
                     } 
                      
@@ -826,9 +835,8 @@ body {
                         if (data.status === 'success') { 
                              
                             if (action === 'concluir') { 
-                                // Ação de Concluir (Sucesso) 
                                 card.classList.add('concluido'); 
-                                card.setAttribute('data-concluido', 'true'); 
+                                card.setAttribute('data-concluido', 'true'); // Atualiza o data-attribute
                                 form.querySelectorAll('input, button').forEach(el => {  
                                     if(el.type !== 'button') el.disabled = true; 
                                 }); 
@@ -840,9 +848,8 @@ body {
                                 updateProgress(1); 
                                  
                             } else { 
-                                // Ação de Reabrir (Sucesso) 
                                 card.classList.remove('concluido'); 
-                                card.setAttribute('data-concluido', 'false'); 
+                                card.setAttribute('data-concluido', 'false'); // Atualiza o data-attribute
                                 form.querySelectorAll('input, button').forEach(el => {  
                                     el.disabled = false; 
                                 }); 
