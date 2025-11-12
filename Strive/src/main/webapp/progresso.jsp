@@ -9,7 +9,8 @@
         response.sendRedirect("login.jsp");
         return;
     }
-    
+    String primeiroNome = usuario.getNome().split(" ")[0]; // Adicionando para uso no cabeçalho.
+
     // As listas devem ser carregadas pelo ProgressoServlet
     List<Progresso> sessoes = (List<Progresso>) request.getAttribute("sessoesConcluidas");
     List<ProgressoExercicio> progressosPeso = (List<ProgressoExercicio>) request.getAttribute("progressoPeso");
@@ -54,6 +55,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
+        /* ESTILOS DA HOME.JSP COPIADOS E INTEGRADOS */
         :root {
             --primary-color: #6a0dad;
             --secondary-color: #8A2BE2;
@@ -67,34 +69,40 @@
             --sidebar-width: 250px;
             --border-radius: 12px;
             --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --error-color: #dc3545; /* Adicionado para mensagens de erro no JS */
         }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: 'Poppins', sans-serif;
             background-color: var(--bg-light);
             color: var(--text-dark);
             overflow-x: hidden; 
         }
+
         .dashboard-container {
             display: flex;
-            width: 100%; 
         }
+
+        /* Sidebar - Estilos da home.jsp */
         .sidebar {
             width: var(--sidebar-width);
-            background-color: #f0f0f5;
+            background-color: var(--bg-sidebar); /* #f0f0f5 */
             height: 100vh;
             position: fixed;
             left: 0;
             top: 0;
             padding: 2rem 1rem;
             border-right: 1px solid #ddd;
-            display: none;
+            display: none; /* Inicia oculto, aparece em desktop */
             z-index: 1100;
         }
+
         .sidebar .logo {
             font-size: 2rem;
             font-weight: 700;
@@ -102,9 +110,11 @@
             margin-bottom: 2.5rem;
             color: var(--primary-color);
         }
+
         .sidebar .nav-list {
             list-style: none;
         }
+
         .sidebar .nav-list a {
             display: flex;
             align-items: center;
@@ -117,16 +127,57 @@
             margin-bottom: 0.5rem;
             transition: background-color 0.3s, color 0.3s;
         }
+
         .sidebar .nav-list a:hover,
         .sidebar .nav-list a.active {
             background-color: var(--primary-color);
             color: #fff;
         }
+
         .sidebar .nav-list a .icon {
             font-size: 1rem;
             width: 20px;
             text-align: center;
         }
+
+        /* Bottom Nav - Estilos da home.jsp */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            padding: 0.8rem 0;
+            background-color: var(--bg-sidebar);
+            border-top: 1px solid #ddd;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .bottom-nav a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            gap: 4px;
+            flex-basis: 0;
+            flex-grow: 1;
+            text-align: center;
+            transition: color 0.3s;
+        }
+
+        .bottom-nav a .icon {
+            font-size: 1.4rem;
+        }
+
+        .bottom-nav a.active,
+        .bottom-nav a:hover {
+            color: var(--primary-color);
+        }
+        /* FIM ESTILOS DA HOME.JSP COPIADOS E INTEGRADOS */
+
         .main-content {
             flex: 1;
             padding: 2rem 1rem; 
@@ -202,6 +253,29 @@
             border-bottom: 1px solid #f0f0f0;
             font-size: 1rem;
         }
+        /* NOVO ESTILO: Garante que o botão detalhes se alinhe corretamente */
+        .list-group-item > div:last-child {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+        }
+        .btn-detalhes-treino {
+            background: none; 
+            border: none; 
+            color: var(--secondary-color); 
+            cursor: pointer; 
+            font-weight: 600; 
+            padding: 0;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        .btn-detalhes-treino:hover {
+            color: var(--primary-color) !important;
+            text-decoration: underline;
+        }
+        /* FIM NOVO ESTILO */
+
         @media (max-width: 450px) {
             .list-group-item {
                 flex-direction: column;
@@ -211,8 +285,10 @@
                 width: 100%;
                 text-align: left !important;
             }
-            .list-group-item div:last-child {
+            /* Ajuste para que o bloco de info básica não quebre o layout */
+            .list-group-item > div:last-child {
                 margin-top: 5px;
+                align-items: flex-start;
             }
         }
 
@@ -227,38 +303,6 @@
             color: var(--text-muted);
         }
         
-        .bottom-nav {
-            display: flex;
-            justify-content: space-around;
-            padding: 0.8rem 0;
-            background-color: var(--bg-sidebar); 
-            border-top: 1px solid #ddd;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-        }
-        .bottom-nav a {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            gap: 4px;
-            flex-basis: 0;
-            flex-grow: 1;
-            text-align: center;
-        }
-        .bottom-nav a .icon {
-            font-size: 1.4rem;
-        }
-        .bottom-nav a.active,
-        .bottom-nav a:hover {
-            color: var(--primary-color);
-        }
-
         .progress-bar-container {
             width: 100%;
             background-color: var(--bg-light);
@@ -282,31 +326,29 @@
             width: 100%;
         }
         
-<<<<<<< HEAD
-=======
         /* ESTILOS DO MODAL */
         .modal {
-            display: none; /* Escondido por padrão */
+            display: none; 
             position: fixed;
-            z-index: 2000; /* Acima de tudo */
+            z-index: 2000; 
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto; /* Permite scroll se o conteúdo for grande */
-            background-color: rgba(0,0,0,0.7); /* Fundo escuro semi-transparente */
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.7); 
         }
         .modal-content {
             background-color: #fefefe;
-            margin: 5% auto; /* 5% do topo e centralizado */
+            margin: 5% auto; 
             padding: 20px;
             border-radius: var(--border-radius);
-            width: 90%; /* Padrão mobile */
-            max-width: 600px; /* Largura máxima em desktop */
+            width: 90%; 
+            max-width: 600px; 
             box-shadow: var(--shadow);
             position: relative;
-            max-height: 90vh; /* Altura máxima da viewport */
-            overflow-y: auto; /* Scroll apenas no conteúdo do modal */
+            max-height: 90vh; 
+            overflow-y: auto; 
         }
         .close-button {
             color: #aaa;
@@ -338,6 +380,13 @@
         .modal-list-group-item:last-child {
             border-bottom: none;
         }
+        /* NOVO ESTILO: Ícones de detalhes no modal */
+        .modal-list-group-item .fa-sync-alt, .modal-list-group-item .fa-weight-hanging {
+            color: var(--primary-color);
+            margin-right: 5px;
+        }
+        /* FIM NOVO ESTILO */
+
         /* Ajuste mobile para lista no modal */
         @media (max-width: 450px) {
             .modal-list-group-item {
@@ -355,18 +404,18 @@
         /* FIM ESTILOS DO MODAL */
 
         /* Media Query para Desktop (992px ou mais) */
->>>>>>> main
         @media (min-width: 992px) {
             .sidebar {
-                display: block;
+                display: block; /* Mostra a sidebar no desktop */
             }
             .main-content {
-                padding: 2rem;
-                margin-left: var(--sidebar-width);
+                padding: 2.5rem; /* Ajuste o padding para o desktop */
+                margin-left: var(--sidebar-width); /* Empurra o conteúdo para a direita da sidebar */
                 width: auto;
+                padding-bottom: 2.5rem; /* Remove o padding extra do bottom-nav */
             }
             .bottom-nav {
-                display: none;
+                display: none; /* Oculta a navegação inferior no desktop */
             }
             .progress-grid {
                 grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
@@ -379,6 +428,7 @@
 </head>
 <body>
     <div class="dashboard-container">
+        
         <aside class="sidebar">
             <div class="logo">STRIVE</div>
             <ul class="nav-list">
@@ -391,7 +441,7 @@
 
         <main class="main-content">
             <header class="main-header">
-                <h1>Seu Progresso 💪</h1>
+                <h1>Seu Progresso, <span><%= primeiroNome %></span> 💪</h1>
                 <p>Aqui você pode acompanhar sua evolução em consistência, força e treinos concluídos.</p>
             </header>
 
@@ -485,10 +535,19 @@
                             %>
                                 <li class="list-group-item">
                                     <div style="font-weight: 600;"><%= sessao.getNomeTreino() %></div>
-                                    <div style="text-align: right;">
+                                    <div>
                                         <span style="display: block;">Duração: <strong><%= sessao.getDuracaoMinutos() %> min</strong></span>
                                         <small style="color: var(--text-muted);">Em: <%= sessao.getDataFim().format(dateFormatter) %></small>
-                                    </div>
+                                        
+                                        <button type="button" 
+                                            class="btn-detalhes-treino" 
+                                            data-id-sessao="<%= sessao.getIdSessao() %>" 
+                                            data-nome-treino="<%= sessao.getNomeTreino() %>"
+                                            data-data-fim="<%= sessao.getDataFim().format(dateFormatter) %>"
+                                            data-duracao="<%= sessao.getDuracaoMinutos() %>">
+                                            <i class="fas fa-search"></i> Detalhes
+                                        </button>
+                                        </div>
                                 </li>
                             <% 
                                 contador++;
@@ -562,7 +621,17 @@
             </ul>
         </div>
     </div>
-
+    
+    <div id="detalhesTreinoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('detalhesTreinoModal')">&times;</span>
+            <h2 id="detalhesTreinoTitulo">Detalhes do Treino</h2>
+            <p id="detalhesTreinoInfo" style="color: var(--text-muted); margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;"></p>
+            <div id="detalhesTreinoBody">
+                <p style="text-align: center; color: #777;">Carregando detalhes...</p>
+            </div>
+        </div>
+    </div>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const dadosTreinos = [];
@@ -574,7 +643,7 @@
                     total: parseInt(<%= cm.getTotalTreinos() %>)
                 });
         <%  }
-        } %>
+        } %> 
 
         if (dadosTreinos.length > 0) {
             const meses = [
@@ -667,6 +736,47 @@
             const chartContainer = document.getElementById('treinosChart').parentNode;
             chartContainer.innerHTML = '<div class="chart-container"><p style="text-align: center; color: #777; margin-top: 5rem;">Ainda não há treinos concluídos para exibir no gráfico.</p></div>';
         }
+        
+        // NOVO: Listener para o botão de Detalhes do Treino
+        document.querySelectorAll('.btn-detalhes-treino').forEach(button => {
+            button.addEventListener('click', function(event) {
+                const idSessao = this.dataset.idSessao;
+                const nomeTreino = this.dataset.nomeTreino;
+                const dataFim = this.dataset.dataFim;
+                const duracao = this.dataset.duracao;
+                const modalBody = document.getElementById('detalhesTreinoBody');
+                const errorColor = getComputedStyle(document.documentElement).getPropertyValue('--error-color').trim();
+                
+                // Atualiza o cabeçalho do modal com informações básicas
+                document.getElementById('detalhesTreinoTitulo').textContent = 'Detalhes: ' + nomeTreino;
+                document.getElementById('detalhesTreinoInfo').innerHTML = 
+                    'Concluído em: <strong>' + dataFim + '</strong> | Duração: <strong>' + duracao + ' min</strong>';
+                
+                // Exibe o modal
+                openModal('detalhesTreinoModal');
+                
+                // Placeholder de carregamento
+                modalBody.innerHTML = '<p style="text-align: center; color: #777;"><i class="fas fa-spinner fa-spin"></i> Carregando detalhes...</p>';
+
+                // Faz a requisição AJAX para o servlet para obter o fragmento JSP com os detalhes
+                fetch('ProgressoServlet?action=detalhes&idSessao=' + idSessao)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erro na requisição: ' + response.statusText);
+                        }
+                        return response.text(); 
+                    })
+                    .then(html => {
+                        // Insere o conteúdo HTML (o fragmento JSP renderizado) no corpo do modal
+                        modalBody.innerHTML = html;
+                    })
+                    .catch(error => {
+                        console.error('Erro ao buscar detalhes do treino:', error);
+                        modalBody.innerHTML = '<p style="color: ' + errorColor + '; text-align: center;">Erro ao carregar os detalhes do treino. Tente novamente.</p>';
+                    });
+            });
+        });
+        // FIM NOVO LISTENER
     });
 
     // Funções do Modal
