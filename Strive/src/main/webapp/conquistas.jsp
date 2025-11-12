@@ -1,5 +1,4 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%-- URIs revertidas para a versão de compatibilidade (que funciona com os JARs novos) --%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
@@ -386,7 +385,8 @@ body {
         window.addEventListener('load', ()=>{
             const toast = document.getElementById('parabensToast');
             
-            <c:if test="${not empty conquistasConcluidas}">
+            <%-- ESTA É A CORREÇÃO: Verifica o 'mostrarToast' que o Servlet enviou --%>
+            <c:if test="${mostrarToast == 'true'}">
                 toast.style.display='block';
                 setTimeout(()=>{ toast.style.display='none'; }, 3000);
             </c:if>

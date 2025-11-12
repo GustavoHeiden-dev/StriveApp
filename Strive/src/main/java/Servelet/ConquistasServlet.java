@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import Dao.ConquistasDAO;
 import Dao.ProgressoDAO;
 import Modelos.Conquista;
-import Modelos.Progresso;
 import Modelos.Usuario;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -32,14 +31,19 @@ public class ConquistasServlet extends HttpServlet {
             return;
         }
 
+        if (session.getAttribute("novaConquista") != null) {
+            request.setAttribute("mostrarToast", "true");
+            session.removeAttribute("novaConquista");
+        }
+
         try {
             int id_usuario = usuario.getId();
 
             ProgressoDAO progressoDAO = new ProgressoDAO();
             ConquistasDAO conquistaDAO = new ConquistasDAO();
 
-            List<Progresso> sessoesConcluidas = progressoDAO.listarSessoesConcluidas(id_usuario);
-            int treinosConcluidos = sessoesConcluidas.size();
+            int totalTreinosConcluidos = progressoDAO.getTotalTreinosConcluidos(id_usuario);
+            int totalDiasUnicos = progressoDAO.getTotalDiasUnicosDeTreino(id_usuario);
 
             List<Conquista> todasAsMetas = conquistaDAO.getTodasConquistas();
 
@@ -57,7 +61,17 @@ public class ConquistasServlet extends HttpServlet {
                     meta.setConcluido(true);
                     conquistasConcluidas.add(meta);
                 } else {
-                    double progresso = Math.min(100.0, ((double) treinosConcluidos / meta.getMeta_treinos()) * 100);
+                    
+                    double progresso = 0.0;
+                    String tipoMeta = meta.getTipo_meta();
+                    int metaValor = meta.getMeta();
+
+                    if ("TOTAL_TREINOS".equals(tipoMeta) && metaValor > 0) {
+                        progresso = Math.min(100.0, ((double) totalTreinosConcluidos / metaValor) * 100);
+                    } else if ("DIAS_UNICOS".equals(tipoMeta) && metaValor > 0) {
+                        progresso = Math.min(100.0, ((double) totalDiasUnicos / metaValor) * 100);
+                    }
+                    
                     meta.setProgresso(progresso);
                     meta.setConcluido(false);
                     conquistasAtivas.add(meta);

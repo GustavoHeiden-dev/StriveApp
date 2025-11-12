@@ -227,7 +227,7 @@
             <ul class="nav-list">
                 <li><a href="home.jsp" class="active"><i class="fas fa-home icon"></i> Home</a></li>
                 <li><a href="TreinoServlet" ><i class="fas fa-dumbbell icon"></i> Treino</a></li>
-                <li><a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a></li>
+                <li><a href="PerfilServlet"><i class="fas fa-user icon"></i> Perfil</a></li>
                 <li class="logout-link"><a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i> Sair</a></li>
             </ul>
         </aside>
@@ -286,7 +286,7 @@
         <nav class="bottom-nav">
             <a href="home.jsp" class="active"><i class="fas fa-home icon"></i> Home</a>
            	<a href="TreinoServlet"><i class="fas fa-dumbbell icon"></i> Treino</a>
-            <a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a>
+            <a href="PerfilServlet"><i class="fas fa-user icon"></i> Perfil</a>
             <a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i> Sair</a>
         </nav>
 

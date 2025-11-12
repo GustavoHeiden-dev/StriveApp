@@ -31,7 +31,8 @@ public class ConquistasDAO {
                     c.setNome(rs.getString("nome"));
                     c.setDescricao(rs.getString("descricao"));
                     c.setIcone(rs.getString("icone"));
-                    c.setMeta_treinos(rs.getInt("meta_treinos"));
+                    c.setMeta(rs.getInt("meta"));
+                    c.setTipo_meta(rs.getString("tipo_meta"));
                     c.setData_conclusao(rs.getTimestamp("data_conclusao"));
                     emblemas.add(c);
                 }
@@ -44,7 +45,7 @@ public class ConquistasDAO {
 
     public List<Conquista> getTodasConquistas() {
         List<Conquista> conquistas = new ArrayList<>();
-        String sql = "SELECT * FROM Conquista ORDER BY meta_treinos ASC";
+        String sql = "SELECT * FROM Conquista ORDER BY meta ASC";
 
         try (Connection conn = ConexaoDB.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -56,7 +57,8 @@ public class ConquistasDAO {
                 c.setNome(rs.getString("nome"));
                 c.setDescricao(rs.getString("descricao"));
                 c.setIcone(rs.getString("icone"));
-                c.setMeta_treinos(rs.getInt("meta_treinos"));
+                c.setMeta(rs.getInt("meta"));
+                c.setTipo_meta(rs.getString("tipo_meta"));
                 conquistas.add(c);
             }
         } catch (Exception e) {

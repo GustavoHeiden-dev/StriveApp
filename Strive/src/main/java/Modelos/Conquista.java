@@ -8,25 +8,25 @@ public class Conquista {
     private String nome;
     private String descricao;
     private String icone;
-    private int meta_treinos;
+    private int meta;
+    private String tipo_meta;
     private Date data_conclusao;
 
-    // Campos adicionados para lógica de visualização
     private double progresso;
     private boolean concluido;
 
     public Conquista() {
     }
 
-    public Conquista(int id_conquista, String nome, String descricao, String icone, int meta_treinos) {
+    public Conquista(int id_conquista, String nome, String descricao, String icone, int meta, String tipo_meta) {
         this.id_conquista = id_conquista;
         this.nome = nome;
         this.descricao = descricao;
         this.icone = icone;
-        this.meta_treinos = meta_treinos;
+        this.meta = meta;
+        this.tipo_meta = tipo_meta;
     }
 
-    // Getters e Setters
     public int getId_conquista() {
         return id_conquista;
     }
@@ -59,12 +59,20 @@ public class Conquista {
         this.icone = icone;
     }
 
-    public int getMeta_treinos() {
-        return meta_treinos;
+    public int getMeta() {
+        return meta;
     }
 
-    public void setMeta_treinos(int meta_treinos) {
-        this.meta_treinos = meta_treinos;
+    public void setMeta(int meta) {
+        this.meta = meta;
+    }
+    
+    public String getTipo_meta() {
+        return tipo_meta;
+    }
+
+    public void setTipo_meta(String tipo_meta) {
+        this.tipo_meta = tipo_meta;
     }
 
     public Date getData_conclusao() {
@@ -75,8 +83,6 @@ public class Conquista {
         this.data_conclusao = data_conclusao;
     }
     
-    // Getters e Setters para os novos campos
-
     public double getProgresso() {
         return progresso;
     }
