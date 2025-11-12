@@ -76,7 +76,7 @@ public class UsuarioExercicioDao {
     public boolean reabrir(int idUsuario, int idExercicio, int idSessao) {
         // SQL: Atualiza o registro, definindo o campo 'concluido' como FALSE.
         // A condição WHERE garante que apenas o registro específico daquela sessão, 
-        // usuário e exercício seja alterado.
+        // usuário e exercício s 
         String sql = "UPDATE UsuarioExercicio SET concluido = FALSE " +
                      "WHERE id_usuario = ? AND id_exercicio = ? AND id_sessao = ?";
 
