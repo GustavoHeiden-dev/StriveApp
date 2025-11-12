@@ -1,53 +1,8 @@
-<%@ page contentType="text/html;charset=UTF-8" import="Modelos.Usuario"%>
-<%
-Usuario usuario = (Usuario) session.getAttribute("usuario");
-if (usuario == null) {
-	response.sendRedirect("login.jsp");
-	return;
-}
-int treinosConcluidos = 0;
-if (request.getAttribute("treinosConcluidos") != null) {
-	treinosConcluidos = (Integer) request.getAttribute("treinosConcluidos");
-}
+<%@ page contentType="text/html;charset=UTF-8" %>
+<%-- URIs revertidas para a versão de compatibilidade (que funciona com os JARs novos) --%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
-class Conquista {
-	String nome, descricao, icone;
-	int meta;
-	double progresso;
-	boolean concluido;
-	Conquista(String nome, String descricao, String icone, int meta, int feitos) {
-		this.nome = nome;
-		this.descricao = descricao;
-		this.icone = icone;
-		this.meta = meta;
-		this.progresso = Math.min(100.0, ((double) feitos / meta) * 100);
-		this.concluido = this.progresso >= 100;
-	}
-}
-
-java.util.List<Conquista> conquistas = new java.util.ArrayList<>();
-conquistas.add(new Conquista("Iniciante", "Complete seu primeiro treino.", "fas fa-rocket", 1, treinosConcluidos));
-conquistas.add(new Conquista("Regular", "Complete 10 treinos.", "fas fa-running", 10, treinosConcluidos));
-conquistas.add(new Conquista("Determinado", "Complete 50 treinos.", "fas fa-trophy", 50, treinosConcluidos));
-conquistas.add(new Conquista("Persistente", "Complete 100 treinos.", "fas fa-fire", 100, treinosConcluidos));
-conquistas.add(new Conquista("Focado", "Complete 200 treinos.", "fas fa-bolt", 200, treinosConcluidos));
-conquistas.add(new Conquista("Maratonista", "Complete 500 treinos.", "fas fa-medal", 500, treinosConcluidos));
-conquistas.add(new Conquista("Assíduo", "Treine todos os dias por 7 dias seguidos.", "fas fa-calendar-day", 7,
-		treinosConcluidos));
-conquistas.add(new Conquista("Sem Descanso", "Treine todos os dias por 30 dias seguidos.", "fas fa-calendar-week", 30,
-		treinosConcluidos));
-conquistas.add(new Conquista("Campeão", "Complete 1000 treinos.", "fas fa-crown", 1000, treinosConcluidos));
-conquistas.add(new Conquista("Lenda", "Complete 2000 treinos.", "fas fa-star", 2000, treinosConcluidos));
-
-java.util.List<Conquista> conquistasAtivas = new java.util.ArrayList<>();
-java.util.List<Conquista> conquistasConcluidas = new java.util.ArrayList<>();
-for (Conquista c : conquistas) {
-	if (c.concluido)
-		conquistasConcluidas.add(c);
-	else
-		conquistasAtivas.add(c);
-}
-%>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -336,7 +291,7 @@ body {
 						Home</a></li>
 				<li><a href="TreinoServlet"><i class="fas fa-dumbbell icon"></i>
 						Treino</a></li>
-				<li><a href="editarperfil.jsp"><i class="fas fa-user icon"></i>
+				<li><a href="PerfilServlet"><i class="fas fa-user icon"></i>
 						Perfil</a></li>
 				<li><a href="SairServlet"><i
 						class="fas fa-sign-out-alt icon"></i> Sair</a></li>
@@ -349,37 +304,43 @@ body {
 				<p>Veja seu progresso e as medalhas que você ganhou!</p>
 			</div>
 			<div class="conquistas-grid">
-				<%
-				for (Conquista c : conquistasAtivas) {
-				%>
-				<div class="conquista-card">
-					<div class="conquista-icon">
-						<i class="<%=c.icone%>"></i>
-					</div>
-					<div class="conquista-info">
-						<h3><%=c.nome%></h3>
-						<p><%=c.descricao%></p>
-						<div class="progress-bar-container">
-							<div class="progress-bar" style="width:<%=c.progresso%>%"></div>
+				
+				<c:forEach var="c" items="${conquistasAtivas}">
+					<div class="conquista-card">
+						<div class="conquista-icon">
+							<i class="${c.icone}"></i>
 						</div>
-						<p><%=(int) c.progresso%>
-							%
-						</p>
+						<div class="conquista-info">
+							<h3>${c.nome}</h3>
+							<p>${c.descricao}</p>
+							<div class="progress-bar-container">
+								<div class="progress-bar" style="width:<fmt:formatNumber value="${c.progresso}" maxFractionDigits="0"/>%"></div>
+							</div>
+							<p><fmt:formatNumber value="${c.progresso}" maxFractionDigits="0"/> %</p>
+						</div>
 					</div>
-				</div>
-				<%
-				}
-				%>
+				</c:forEach>
+				
+				<c:if test="${empty conquistasAtivas && empty conquistasConcluidas}">
+            		<p style="color: var(--text-muted); grid-column: 1 / -1; text-align: center;">
+            			Você ainda não tem nenhuma conquista. Conclua seu primeiro treino para começar!
+            		</p>
+            	</c:if>
+				
 			</div>
-			<button id="verConquistas"
-				style="margin-top: 2rem; padding: 0.7rem 1.2rem; border: none; background: var(--primary-color); color: #fff; border-radius: 8px; cursor: pointer;">Ver
-				conquistas concluídas</button>
+			
+			<c:if test="${not empty conquistasConcluidas}">
+				<button id="verConquistas"
+					style="margin-top: 2rem; padding: 0.7rem 1.2rem; border: none; background: var(--primary-color); color: #fff; border-radius: 8px; cursor: pointer;">Ver
+					conquistas concluídas</button>
+			</c:if>
+			
 		</main>
 
 		<nav class="bottom-nav">
 			<a href="home.jsp"><i class="fas fa-home icon"></i> Home</a> <a
 				href="TreinoServlet"><i class="fas fa-dumbbell icon"></i> Treino</a>
-			<a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a>
+			<a href="PerfilServlet"><i class="fas fa-user icon"></i> Perfil</a>
 			<a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i>
 				Sair</a>
 		</nav>
@@ -390,15 +351,15 @@ body {
 			<span class="close-modal" id="closeModal">&times;</span>
 			<h2>Conquistas Concluídas</h2>
 			<ul>
-				<%
-				for (Conquista c : conquistasConcluidas) {
-				%>
-				<li><i class="<%=c.icone%>"
-					style="color: var(--gold-color); margin-right: 0.5rem;"></i><%=c.nome%>
-					- <%=c.descricao%></li>
-				<%
-				}
-				%>
+				<c:forEach var="c" items="${conquistasConcluidas}">
+					<li><i class="${c.icone}"
+						style="color: var(--gold-color); margin-right: 0.5rem;"></i>${c.nome}
+						- ${c.descricao}</li>
+				</c:forEach>
+				
+				<c:if test="${empty conquistasConcluidas}">
+            		<li style="color: var(--text-muted);">Nenhuma conquista concluída ainda.</li>
+            	</c:if>
 			</ul>
 		</div>
 	</div>
@@ -410,16 +371,25 @@ body {
         const verBtn = document.getElementById('verConquistas');
         const modal = document.getElementById('modalConquistas');
         const closeModal = document.getElementById('closeModal');
-        verBtn.onclick = ()=> modal.style.display='flex';
-        closeModal.onclick = ()=> modal.style.display='none';
-        window.onclick = e=> { if(e.target == modal) modal.style.display='none'; }
+        
+        if (verBtn) {
+        	verBtn.onclick = ()=> modal.style.display='flex';
+        }
+        if (closeModal) {
+        	closeModal.onclick = ()=> modal.style.display='none';
+        }
+        
+        window.onclick = e=> { 
+			if(e.target == modal) modal.style.display='none'; 
+		}
 
         window.addEventListener('load', ()=>{
             const toast = document.getElementById('parabensToast');
-            <%if (!conquistasConcluidas.isEmpty()) {%>
+            
+            <c:if test="${not empty conquistasConcluidas}">
                 toast.style.display='block';
                 setTimeout(()=>{ toast.style.display='none'; }, 3000);
-            <%}%>
+            </c:if>
         });
     </script>
 </body>

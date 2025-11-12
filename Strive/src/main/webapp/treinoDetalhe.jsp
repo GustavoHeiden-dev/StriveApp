@@ -39,23 +39,19 @@ int idSessao = (Integer) request.getAttribute("idSessao");
 	--border-radius: 12px;
 	--shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
-
 * {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
 }
-
 body {
 	font-family: 'Poppins', sans-serif;
 	background-color: var(--light-color);
 	color: var(--text-color);
 }
-
 .dashboard-container {
 	display: flex;
 }
-
 .sidebar {
 	width: var(--sidebar-width);
 	background-color: var(--white-color);
@@ -68,7 +64,6 @@ body {
 	display: none;
 	z-index: 1001;
 }
-
 .sidebar .logo {
 	font-size: 2rem;
 	font-weight: 700;
@@ -76,11 +71,9 @@ body {
 	margin-bottom: 2.5rem;
 	color: var(--primary-color);
 }
-
 .sidebar .nav-list {
 	list-style: none;
 }
-
 .sidebar .nav-list a {
 	display: flex;
 	align-items: center;
@@ -92,23 +85,19 @@ body {
 	border-radius: 8px;
 	margin-bottom: 0.5rem;
 }
-
 .sidebar .nav-list a:hover, .sidebar .nav-list a.active {
 	background-color: var(--primary-color);
 	color: var(--white-color);
 }
-
 .sidebar .nav-list a .icon {
 	width: 20px;
 	text-align: center;
 }
-
 .main-content {
 	flex: 1;
 	padding: 1rem;
 	padding-bottom: 100px;
 }
-
 .main-header {
 	display: flex;
 	justify-content: space-between;
@@ -117,13 +106,11 @@ body {
 	flex-wrap: wrap;
 	gap: 1rem;
 }
-
 .main-header h1 {
 	font-size: 2rem;
 	font-weight: 700;
 	color: var(--dark-color);
 }
-
 .progress-counter {
 	background-color: var(--primary-color);
 	color: var(--white-color);
@@ -131,7 +118,6 @@ body {
 	border-radius: 20px;
 	font-weight: 600;
 }
-
 .exercicio-card {
 	background: var(--white-color);
 	border-radius: var(--border-radius);
@@ -141,33 +127,27 @@ body {
 	border-left: 5px solid var(--primary-color);
 	transition: all 0.4s ease;
 }
-
 .exercicio-card.concluido {
 	border-left-color: var(--success-color);
 	background-color: var(--success-light-color);
 }
-
 .exercicio-card.concluido .exercicio-header h3 {
 	color: var(--success-color);
 	text-decoration: line-through;
 }
-
 .exercicio-card.concluido .grupo-muscular {
 	background-color: var(--success-color);
 }
-
 .exercicio-header {
 	display: flex;
 	justify-content: space-between;
 	align-items: flex-start;
 	margin-bottom: 1rem;
 }
-
 .exercicio-header h3 {
 	margin: 0;
 	color: var(--primary-color);
 }
-
 .grupo-muscular {
 	background: var(--secondary-color);
 	color: white;
@@ -177,12 +157,10 @@ body {
 	font-weight: 600;
 	white-space: nowrap;
 }
-
 .exercicio-details p {
 	margin: 0.5rem 0;
 	color: #555;
 }
-
 .btn {
 	display: inline-block;
 	background: var(--primary-color);
@@ -195,16 +173,13 @@ body {
 	transition: all 0.3s;
 	cursor: pointer;
 }
-
 .btn:hover {
 	background-color: var(--secondary-color);
 	transform: translateY(-2px);
 }
-
 .btn-success {
 	background-color: var(--success-color);
 }
-
 .finalizar-treino-container {
 	text-align: center;
 	margin-top: 2rem;
@@ -213,24 +188,20 @@ body {
 	border-radius: var(--border-radius);
 	box-shadow: var(--shadow);
 }
-
 .btn-finalizar {
 	font-size: 1.2rem !important;
 	padding: 15px 30px !important;
 	width: 100%;
 	max-width: 400px;
 }
-
 .btn-finalizar.disabled {
 	background-color: var(--disabled-color);
 	cursor: not-allowed;
 	color: #888;
 }
-
 .btn-finalizar.disabled:hover {
 	transform: none;
 }
-
 .bottom-nav {
 	display: flex;
 	justify-content: space-around;
@@ -243,7 +214,6 @@ body {
 	width: 100%;
 	z-index: 100;
 }
-
 .bottom-nav a {
 	display: flex;
 	flex-direction: column;
@@ -252,30 +222,23 @@ body {
 	color: #888;
 	font-size: 0.7rem;
 	gap: 4px;
-    flex-basis: 0;
-    flex-grow: 1;
-    text-align: center;
 }
-
 .bottom-nav a .icon {
 	font-size: 1.4rem;
 }
-
 .bottom-nav a.active, .bottom-nav a:hover {
 	color: var(--primary-color);
 }
-
 .series-section {
 	margin-top: 1.5rem;
 	padding-top: 1.5rem;
 	border-top: 1px solid #eee;
 }
-
 .series-list {
 	list-style: none;
 	margin-bottom: 1.5rem;
 }
-
+/* ESTILIZAÇÃO DAS SÉRIES JÁ ADICIONADAS */
 .serie-item {
 	display: flex;
 	justify-content: space-between;
@@ -286,48 +249,45 @@ body {
 	margin-bottom: 0.5rem;
 	font-weight: 500;
 }
-
-.serie-item div {
-	display: flex;
-	gap: 2rem;
-	flex-grow: 1;
-	align-items: center;
+.serie-item div { /* O div interno que contém os spans */
+   display: flex;
+   gap: 2rem;
+   flex-grow: 1;
+   align-items: center;
 }
-
 .serie-item span {
-	background-color: var(--white-color);
-	padding: 6px 12px;
-	border-radius: 8px;
-	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	color: #666;
-	white-space: nowrap;
+   background-color: var(--white-color);
+   padding: 6px 12px;
+   border-radius: 8px;
+   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   color: #666;
+   white-space: nowrap;
 }
-
 .serie-item span i {
-	color: var(--primary-color);
-	font-size: 1.1rem;
+   color: var(--primary-color);
+   font-size: 1.1rem;
 }
-
 .serie-item span strong {
-	font-size: 1.1rem;
-	font-weight: 700;
-	color: var(--dark-color);
+   font-size: 1.1rem;
+   font-weight: 700;
+   color: var(--dark-color);
 }
-
+/* FIM DA ESTILIZAÇÃO DAS SÉRIES JÁ ADICIONADAS */
+/* INÍCIO DA ESTILIZAÇÃO DO FORMULÁRIO DE ADIÇÃO DE SÉRIE */
 .serie-form .form-row {
 	display: grid;
 	grid-template-columns: 1fr 1fr auto auto;
 	gap: 1rem;
+	/* CORRIGIDO: Alinhar itens ao final para que os botões não se estiquem */
 	align-items: flex-end;
 }
-
 .form-group {
 	margin-bottom: 0;
 }
-
+/* Estilização do rótulo do campo com ícone */
 .serie-form .form-group label {
 	font-size: 0.95rem;
 	margin-bottom: 0.25rem;
@@ -337,11 +297,10 @@ body {
 	font-weight: 600;
 	color: var(--dark-color);
 }
-
 .serie-form .form-group label i {
-	color: var(--primary-color);
+   color: var(--primary-color);
 }
-
+/* Estilização do input (Repetições e Peso) */
 .serie-form .form-group input {
 	width: 100%;
 	padding: 12px;
@@ -351,45 +310,41 @@ body {
 	font-family: 'Poppins', sans-serif;
 	transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
-
 .serie-form .form-group input:focus {
-	border-color: var(--secondary-color);
-	box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.1);
-	outline: none;
+   border-color: var(--secondary-color);
+   box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.1);
+   outline: none;
 }
-
+/* CORRIGIDO: Remover altura forçada (height: 100%) e usar o padding padrão do .btn */
 .serie-form .form-group button {
-	padding: 10px 20px;
-	font-size: 1rem;
+   /* height: 100%; REMOVIDO */
+   padding: 10px 20px;
+   font-size: 1rem;
 }
-
+/* FIM DA ESTILIZAÇÃO DO FORMULÁRIO DE ADIÇÃO DE SÉRIE */
 .btn-concluir-exercicio {
 	background-color: var(--success-color);
 }
-
 .serie-error-message {
 	color: var(--error-color);
 	font-weight: 500;
 	margin-top: 0.5rem;
 	height: 1em;
 }
-
 .btn-remover-serie {
-	background: none;
-	border: none;
-	color: var(--error-color);
-	cursor: pointer;
-	font-size: 1rem;
-	padding: 0 5px;
-	line-height: 1;
-	transition: color 0.2s;
-	margin-left: 10px;
+   background: none;
+   border: none;
+   color: var(--error-color);
+   cursor: pointer;
+   font-size: 1rem;
+   padding: 0 5px;
+   line-height: 1;
+   transition: color 0.2s;
+   margin-left: 10px;
 }
-
 .btn-remover-serie:hover {
-	color: var(--dark-color);
+   color: var(--dark-color);
 }
-
 @media ( max-width : 768px) {
 	.main-header h1 {
 		font-size: 1.8rem;
@@ -401,7 +356,6 @@ body {
 		margin-bottom: 1rem;
 	}
 }
-
 @media ( min-width : 992px) {
 	.sidebar {
 		display: block;
@@ -420,36 +374,31 @@ body {
 </style>
 </head>
 <body>
-	<div class="dashboard-container">
-		<aside class="sidebar">
-			<div class="logo">STRIVE</div>
-			<ul class="nav-list">
-				<li><a href="home.jsp"><i class="fas fa-home icon"></i> Home</a></li>
-				<li><a href="TreinoServlet" class="active"><i
-						class="fas fa-dumbbell icon"></i> Treino</a></li>
-				<li><a href="editarperfil.jsp"><i class="fas fa-user icon"></i>
-						Perfil</a></li>
-				<li><a href="SairServlet"><i
-						class="fas fa-sign-out-alt icon"></i> Sair</a></li>
-			</ul>
-		</aside>
-
+   <div class="dashboard-container">
+       <aside class="sidebar">
+           <div class="logo">STRIVE</div>
+           <ul class="nav-list">
+               <li><a href="home.jsp"><i class="fas fa-home icon"></i> Home</a></li>
+               <li><a href="TreinoServlet" class="active"><i class="fas fa-dumbbell icon"></i> Treino</a></li>
+               <li><a href="ProgressoServlet"><i class="fas fa-chart-line icon"></i> Progresso</a></li>
+               <li><a href="ConquistasServlet"><i class="fas fa-trophy icon"></i> Conquistas</a></li>
+               <li><a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a></li>
+           </ul>
+       </aside>
 		<main class="main-content">
 			<div class="main-header">
 				<div>
 					<h1>Executando Treino</h1>
 					<p>Adicione suas séries e conclua os exercícios.</p>
 				</div>
-				<div class="progress-counter" id="timerDisplay"
-					style="margin-right: 1rem;">
+               <div class="progress-counter" id="timerDisplay" style="margin-right: 1rem;">
 					<i class="fas fa-clock"></i> 00:00:00
 				</div>
-				<div class="progress-counter" id="progressCounter">
+               <div class="progress-counter" id="progressCounter">
 					<i class="fas fa-dumbbell"></i> <span id="completedCount">0</span>/<%=totalExercicios%>
 					Concluídos
 				</div>
 			</div>
-
 			<%
 			if (exercicios != null && !exercicios.isEmpty()) {
 			%>
@@ -466,7 +415,6 @@ body {
 						<strong>Meta Sugerida:</strong>
 						<%=ex.getRepeticoes()%></p>
 				</div>
-
 				<div class="series-section">
 					<h4>Séries Realizadas</h4>
 					<ul class="series-list" id="series-list-<%=ex.getId()%>">
@@ -475,17 +423,16 @@ body {
 							for (Serie s : ex.getSeries()) {
 						%>
 						<li class="serie-item" data-id-serie="<%=s.getId()%>">
-							<div>
-								<span><i class="fas fa-sync-alt"></i> <strong><%=s.getRepeticoes()%></strong>
-									rep</span> <span><i class="fas fa-weight-hanging"></i> <strong><%=s.getPeso()%></strong>
-									kg</span>
-							</div>
-							<button type="button" class="btn-remover-serie"
-								data-id-serie="<%=s.getId()%>"
-								data-exercicio-id="<%=ex.getId()%>">
-								<i class="fas fa-times"></i>
-							</button>
-						</li>
+                           <div>
+                               <span><i class="fas fa-sync-alt"></i> <strong><%=s.getRepeticoes()%></strong> rep</span>
+                               <span><i class="fas fa-weight-hanging"></i> <strong><%=s.getPeso()%></strong> kg</span>
+                           </div>
+                           <button type="button" class="btn-remover-serie"
+                               data-id-serie="<%=s.getId()%>"
+                               data-exercicio-id="<%=ex.getId()%>">
+                               <i class="fas fa-times"></i>
+                           </button>
+                       </li>
 						<%
 						}
 						} else {
@@ -497,19 +444,19 @@ body {
 						}
 						%>
 					</ul>
-
 					<form class="serie-form" data-exercicio-id="<%=ex.getId()%>">
 						<input type="hidden" name="idExercicio" value="<%=ex.getId()%>">
 						<input type="hidden" name="idSessao" value="<%=idSessao%>">
 						<div class="form-row">
 							<div class="form-group">
-								<label><i class="fas fa-sync-alt"></i> Repetições</label> <input
-									type="number" name="repeticoes" placeholder="12" required>
+								<label><i class="fas fa-sync-alt"></i> Repetições</label>
+								<input type="number" name="repeticoes"
+									placeholder="12" required>
 							</div>
 							<div class="form-group">
 								<label><i class="fas fa-weight-hanging"></i> Peso (kg)</label>
-								<input type="number" step="0.5" name="peso" placeholder="50.5"
-									required>
+								<input type="number" step="0.5"
+									name="peso" placeholder="50.5" required>
 							</div>
 							<div class="form-group">
 								<button type="submit" class="btn">
@@ -530,7 +477,6 @@ body {
 			<%
 			}
 			%>
-
 			<div class="finalizar-treino-container">
 				<h2>Tudo pronto?</h2>
 				<p>Finalize sua sessão para salvar seu progresso.</p>
@@ -538,8 +484,8 @@ body {
 					id="finalizarTreinoForm">
 					<input type="hidden" name="idSessao" value="<%=idSessao%>">
 					<input type="hidden" name="idTreino" value="<%=idTreino%>">
-					<input type="hidden" name="duracaoTreino" id="duracaoTreinoInput">
-					<button type="submit" id="finalizarBtn"
+                   <input type="hidden" name="duracaoTreino" id="duracaoTreinoInput">
+                   <button type="submit" id="finalizarBtn"
 						class="btn btn-success btn-finalizar disabled">
 						<i class="fas fa-flag-checkered"></i> Finalizar Treino
 					</button>
@@ -555,218 +501,203 @@ body {
 			<%
 			}
 			%>
-
 			<a href="TreinoServlet" class="btn" style="margin-top: 2rem;">Voltar
 				para a Lista de Treinos</a>
 		</main>
-
 		<nav class="bottom-nav">
 			<a href="home.jsp"><i class="fas fa-home icon"></i> Home</a> <a
 				href="TreinoServlet" class="active"><i
-				class="fas fa-dumbbell icon"></i> Treino</a> <a
+				class="fas fa-dumbbell icon"></i> Treino</a> <a href="progress.jsp"><i
+				class="fas fa-chart-line icon"></i> Progresso</a>
+				<li><a href="ConquistasServlet"><i class="fas fa-trophy icon"></i> Conquistas</a></li><a
 				href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a>
-			<a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i>
-				Sair</a>
 		</nav>
 	</div>
-
 	<script>
-        document.addEventListener('DOMContentLoaded', () => {
-            
-            let seconds = 0;
-            let minutes = 0;
-            let hours = 0;
-            const timerDisplay = document.getElementById('timerDisplay');
-            const duracaoTreinoInput = document.getElementById('duracaoTreinoInput');
-            
-            function formatTime(val) {
-                return val < 10 ? "0" + val : val;
-            }
-            
-            function updateTimer() {
-                seconds++;
-                if (seconds === 60) {
-                    seconds = 0;
-                    minutes++;
-                    if (minutes === 60) {
-                        minutes = 0;
-                        hours++;
-                    }
-                }
-                
-                const timeString = formatTime(hours) + ":" + formatTime(minutes) + ":" + formatTime(seconds);
-                timerDisplay.innerHTML = '<i class="fas fa-clock"></i> ' + timeString;
-                duracaoTreinoInput.value = timeString;
-            }
-            
-            const timerInterval = setInterval(updateTimer, 1000); 
-            
-            const finalizarTreinoForm = document.getElementById('finalizarTreinoForm');
-            finalizarTreinoForm.addEventListener('submit', function(event) {
-                clearInterval(timerInterval); 
-            });
-
-
-            let completedCount = 0;
-            const totalExercicios = <%=totalExercicios%>;
-            const completedCountSpan = document.getElementById('completedCount');
-            const finalizarBtn = document.getElementById('finalizarBtn');
-            finalizarBtn.disabled = true;
-
-            function updateProgress() {
-                completedCount++;
-                completedCountSpan.textContent = completedCount;
-                if (completedCount >= 1) { 
-                    finalizarBtn.classList.remove('disabled');
-                    finalizarBtn.disabled = false;
-                }
-            }
-
-            function handleDeleteSerie(event) {
-                const button = event.currentTarget;
-                const idSerie = button.dataset.idSerie;
-                const exercicioId = button.dataset.exercicioId;
-                const serieItem = button.closest('.serie-item');
-                const seriesList = document.getElementById('series-list-' + exercicioId);
-
-                if (!confirm('Tem certeza que deseja excluir esta série?')) {
-                    return;
-                }
-                
-                const params = new URLSearchParams();
-                params.append('idSerie', idSerie);
-                
-                fetch('RemoverSerieServlet', {
-                    method: 'POST',
-                    body: params
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        serieItem.remove();
-                        
-                        if (seriesList.children.length === 0) {
-                            const noSeriesMsg = document.createElement('li');
-                            noSeriesMsg.className = 'no-series';
-                            noSeriesMsg.style.cssText = 'text-align: center; color: var(--text-muted);';
-                            noSeriesMsg.textContent = 'Nenhuma série registrada.';
-                            seriesList.appendChild(noSeriesMsg);
-                        }
-
-                    } else {
-                        alert('Erro ao remover a série: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro no fetch de remoção:', error);
-                    alert('Não foi possível remover a série.');
-                });
-            }
-
-            document.addEventListener('click', function(event) {
-                const targetButton = event.target.closest('.btn-remover-serie');
-                if (targetButton) {
-                    handleDeleteSerie({ currentTarget: targetButton });
-                }
-            });
-
-
-            document.querySelectorAll('.serie-form').forEach(form => {
-                form.addEventListener('submit', function(event) {
-                    event.preventDefault();
-                    
-                    const exercicioId = this.dataset.exercicioId;
-                    const seriesList = document.getElementById('series-list-' + exercicioId);
-                    const noSeriesMsg = seriesList.querySelector('.no-series');
-                    const errorMessageDiv = document.getElementById('error-' + exercicioId);
-                    
-                    const repeticoesInput = this.querySelector('input[name="repeticoes"]');
-                    const pesoInput = this.querySelector('input[name="peso"]');
-                    const repeticoesValue = repeticoesInput.value;
-                    const pesoValue = pesoInput.value;
-                    
-                    const formData = new URLSearchParams(new FormData(this));
-
-                    fetch('AdicionarSerieServlet', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        errorMessageDiv.textContent = '';
-                        if (data.status === 'success') {
-                            if (noSeriesMsg) {
-                                noSeriesMsg.remove();
-                            }
-                            
-                            const newIdSerie = data.idSerie; 
-
-                            const newSerieItem = document.createElement('li');
-                            newSerieItem.className = 'serie-item';
-                            newSerieItem.setAttribute('data-id-serie', newIdSerie);
-                            
-                            const pesoFormatado = parseFloat(pesoValue).toFixed(1);
-                            
-                            newSerieItem.innerHTML = 
-                                '<div>' +
-                                    '<span><i class="fas fa-sync-alt"></i> <strong>' + repeticoesValue + '</strong> rep</span>' +
-                                    '<span><i class="fas fa-weight-hanging"></i> <strong>' + pesoFormatado + '</strong> kg</span>' +
-                                '</div>' + 
-                                '<button type="button" class="btn-remover-serie" ' +
-                                'data-id-serie="' + newIdSerie + '" ' +
-                                'data-exercicio-id="' + exercicioId + '">' + 
-                                '<i class="fas fa-times"></i></button>';
-
-                            seriesList.appendChild(newSerieItem);
-                            this.reset();
-                            repeticoesInput.focus();
-                            
-
-                        } else {
-                            errorMessageDiv.textContent = data.message;
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erro no fetch:', error);
-                        errorMessageDiv.textContent = 'Não foi possível adicionar a série.';
-                    });
-                });
-            });
-
-            document.querySelectorAll('.btn-concluir-exercicio').forEach(button => {
-                button.addEventListener('click', function(event) {
-                    const exercicioId = this.dataset.exercicioId;
-                    const card = document.getElementById('card-' + exercicioId);
-                    
-                    const params = new URLSearchParams();
-                    params.append('idExercicio', exercicioId);
-                    params.append('idSessao', '<%=idSessao%>');
-                    
-                    fetch('MarcarExercicioServlet', {
-                        method: 'POST',
-                        body: params
-                    })
-                    .then(response => response.ok ? response.json() : Promise.reject('Erro de rede'))
-                    .then(data => {
-                        if (data.status === 'success') {
-                            card.classList.add('concluido');
-                            card.querySelectorAll('.serie-form input, .serie-form button, .btn-concluir-exercicio').forEach(el => {
-                                el.disabled = true;
-                            });
-                            this.innerHTML = '<i class="fas fa-check-circle"></i> Concluído';
-                            updateProgress();
-                        } else {
-                            alert('Erro ao concluir o exercício: 'Ocorreu um erro ao marcar o exercício como concluído.' + data.message);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erro no fetch:', error);
-                        alert('Não foi possível concluir o exercício. Verifique sua conexão.');
-                    });
-                });
-            });
-            
-        });
-    </script>
+       document.addEventListener('DOMContentLoaded', () => {
+          
+           let seconds = 0;
+           let minutes = 0;
+           let hours = 0;
+           const timerDisplay = document.getElementById('timerDisplay');
+           const duracaoTreinoInput = document.getElementById('duracaoTreinoInput');
+          
+           function formatTime(val) {
+               return val < 10 ? "0" + val : val;
+           }
+          
+           function updateTimer() {
+               seconds++;
+               if (seconds === 60) {
+                   seconds = 0;
+                   minutes++;
+                   if (minutes === 60) {
+                       minutes = 0;
+                       hours++;
+                   }
+               }
+              
+               const timeString = formatTime(hours) + ":" + formatTime(minutes) + ":" + formatTime(seconds);
+               timerDisplay.innerHTML = '<i class="fas fa-clock"></i> ' + timeString;
+               duracaoTreinoInput.value = timeString;
+           }
+          
+           const timerInterval = setInterval(updateTimer, 1000);
+          
+           const finalizarTreinoForm = document.getElementById('finalizarTreinoForm');
+           finalizarTreinoForm.addEventListener('submit', function(event) {
+               clearInterval(timerInterval);
+           });
+           let completedCount = 0;
+           const totalExercicios = <%=totalExercicios%>;
+           const completedCountSpan = document.getElementById('completedCount');
+           const finalizarBtn = document.getElementById('finalizarBtn');
+           finalizarBtn.disabled = true;
+           function updateProgress() {
+               completedCount++;
+               completedCountSpan.textContent = completedCount;
+               if (completedCount >= 1) {
+                   finalizarBtn.classList.remove('disabled');
+                   finalizarBtn.disabled = false;
+               }
+           }
+           function handleDeleteSerie(event) {
+               const button = event.currentTarget;
+               const idSerie = button.dataset.idSerie;
+               const exercicioId = button.dataset.exercicioId;
+               const serieItem = button.closest('.serie-item');
+               const seriesList = document.getElementById('series-list-' + exercicioId);
+               if (!confirm('Tem certeza que deseja excluir esta série?')) {
+                   return;
+               }
+              
+               const params = new URLSearchParams();
+               params.append('idSerie', idSerie);
+              
+               fetch('RemoverSerieServlet', {
+                   method: 'POST',
+                   body: params
+               })
+               .then(response => response.json())
+               .then(data => {
+                   if (data.status === 'success') {
+                       serieItem.remove();
+                      
+                       if (seriesList.children.length === 0) {
+                           const noSeriesMsg = document.createElement('li');
+                           noSeriesMsg.className = 'no-series';
+                           noSeriesMsg.style.cssText = 'text-align: center; color: var(--text-muted);';
+                           noSeriesMsg.textContent = 'Nenhuma série registrada.';
+                           seriesList.appendChild(noSeriesMsg);
+                       }
+                   } else {
+                       alert('Erro ao remover a série: ' + data.message);
+                   }
+               })
+               .catch(error => {
+                   console.error('Erro no fetch de remoção:', error);
+                   alert('Não foi possível remover a série.');
+               });
+           }
+           // CORREÇÃO APLICADA: Delegação de eventos
+           document.addEventListener('click', function(event) {
+               const targetButton = event.target.closest('.btn-remover-serie');
+               if (targetButton) {
+                   handleDeleteSerie({ currentTarget: targetButton });
+               }
+           });
+           document.querySelectorAll('.serie-form').forEach(form => {
+               form.addEventListener('submit', function(event) {
+                   event.preventDefault();
+                  
+                   const exercicioId = this.dataset.exercicioId;
+                   const seriesList = document.getElementById('series-list-' + exercicioId);
+                   const noSeriesMsg = seriesList.querySelector('.no-series');
+                   const errorMessageDiv = document.getElementById('error-' + exercicioId);
+                  
+                   const repeticoesInput = this.querySelector('input[name="repeticoes"]');
+                   const pesoInput = this.querySelector('input[name="peso"]');
+                   const repeticoesValue = repeticoesInput.value;
+                   const pesoValue = pesoInput.value;
+                  
+                   const formData = new URLSearchParams(new FormData(this));
+                   fetch('AdicionarSerieServlet', {
+                       method: 'POST',
+                       body: formData
+                   })
+                   .then(response => response.json())
+                   .then(data => {
+                       errorMessageDiv.textContent = '';
+                       if (data.status === 'success') {
+                           if (noSeriesMsg) {
+                               noSeriesMsg.remove();
+                           }
+                          
+                           const newIdSerie = data.idSerie;
+                           const newSerieItem = document.createElement('li');
+                           newSerieItem.className = 'serie-item';
+                           newSerieItem.setAttribute('data-id-serie', newIdSerie);
+                          
+                           // ALTERADO: HTML para exibir a nova série com a estilização aplicada
+                           const pesoFormatado = parseFloat(pesoValue).toFixed(1);
+                          
+                           newSerieItem.innerHTML =
+                               '<div>' +
+                                   '<span><i class="fas fa-sync-alt"></i> <strong>' + repeticoesValue + '</strong> rep</span>' +
+                                   '<span><i class="fas fa-weight-hanging"></i> <strong>' + pesoFormatado + '</strong> kg</span>' +
+                               '</div>' +
+                               '<button type="button" class="btn-remover-serie" ' +
+                               'data-id-serie="' + newIdSerie + '" ' +
+                               'data-exercicio-id="' + exercicioId + '">' +
+                               '<i class="fas fa-times"></i></button>';
+                           seriesList.appendChild(newSerieItem);
+                           this.reset();
+                           repeticoesInput.focus();
+                          
+                       } else {
+                           errorMessageDiv.textContent = data.message;
+                       }
+                   })
+                   .catch(error => {
+                       console.error('Erro no fetch:', error);
+                       errorMessageDiv.textContent = 'Não foi possível adicionar a série.';
+                   });
+               });
+           });
+           document.querySelectorAll('.btn-concluir-exercicio').forEach(button => {
+               button.addEventListener('click', function(event) {
+                   const exercicioId = this.dataset.exercicioId;
+                   const card = document.getElementById('card-' + exercicioId);
+                  
+                   const params = new URLSearchParams();
+                   params.append('idExercicio', exercicioId);
+                   params.append('idSessao', '<%=idSessao%>');
+                  
+                   fetch('MarcarExercicioServlet', {
+                       method: 'POST',
+                       body: params
+                   })
+                   .then(response => response.ok ? response.json() : Promise.reject('Erro de rede'))
+                   .then(data => {
+                       if (data.status === 'success') {
+                           card.classList.add('concluido');
+                           card.querySelectorAll('.serie-form input, .serie-form button, .btn-concluir-exercicio').forEach(el => {
+                               el.disabled = true;
+                           });
+                           this.innerHTML = '<i class="fas fa-check-circle"></i> Concluído';
+                           updateProgress();
+                       } else {
+                           alert('Erro ao concluir o exercício: ' + data.message);
+                       }
+                   })
+                   .catch(error => {
+                       console.error('Erro no fetch:', error);
+                       alert('Não foi possível concluir o exercício.');
+                   });
+               });
+           });
+          
+       });
+   </script>
 </body>
 </html>
