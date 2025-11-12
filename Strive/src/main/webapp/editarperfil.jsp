@@ -1,12 +1,12 @@
-<%@ page import="Modelos.Usuario" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page import="Modelos.Usuario" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%
     Usuario usuario = (Usuario) session.getAttribute("usuario");
     if (usuario == null) {
         response.sendRedirect("login.jsp");
         return;
     }
-    String primeiroNome = usuario.getNome().split(" ")[0];
 %>
 <!DOCTYPE html>
 <html>
@@ -224,6 +224,64 @@
         #btn-cancelar-senha:hover {
             background-color: #ccc;
         }
+        
+        /* --- CSS DOS EMBLEMAS --- */
+        .emblemas-container {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .emblemas-container h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .emblemas-container h3 i {
+            color: var(--primary-color);
+        }
+
+        .emblemas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 1rem;
+        }
+
+        .emblema-card {
+            background: #fdfcff;
+            border-radius: 12px;
+            padding: 1.2rem 1rem;
+            text-align: center;
+            border: 1px solid #e9d5ff;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: help; 
+        }
+
+        .emblema-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(106, 29, 173, 0.1);
+        }
+
+        .emblema-card i {
+            font-size: 2.2rem;
+            color: #FFD700; 
+            display: block;
+            /* Removida a margem inferior para centralizar o ícone */
+        }
+
+        .emblemas-vazio {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            grid-column: 1 / -1; 
+            text-align: center;
+            padding: 1rem;
+        }
+        /* --- FIM DO CSS DOS EMBLEMAS --- */
 
         @media(min-width: 768px) {
             .form-grid { grid-template-columns: 1fr 1fr; }
@@ -243,7 +301,7 @@
             <ul class="nav-list">
                 <li><a href="home.jsp"><i class="fas fa-home icon"></i> Home</a></li>
                 <li><a href="TreinoServlet"><i class="fas fa-dumbbell icon"></i> Treino</a></li>
-                <li><a href="editarperfil.jsp" class="active"><i class="fas fa-user icon"></i> Perfil</a></li>
+                <li><a href="PerfilServlet" class="active"><i class="fas fa-user icon"></i> Perfil</a></li>
                 <li><a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i> Sair</a></li>
             </ul>
         </aside>
@@ -269,6 +327,35 @@
                         <p>Altere suas informações abaixo</p>
                     </div>
                 </div>
+                
+                <!-- 
+                ======================================================
+                == INÍCIO DO BLOCO DE EMBLEMAS (VERSÃO LIMPA) ==
+                ======================================================
+                -->
+                <div class="emblemas-container">
+                    <h3><i class="fas fa-trophy"></i> Meus Emblemas</h3>
+                    
+                    <div class="emblemas-grid">
+                        
+                        <c:forEach var="emblema" items="${listaEmblemas}">
+                            <div class="emblema-card" title="${emblema.descricao}">
+                                <%-- Mostra APENAS o ícone --%>
+                                <i class="${emblema.icone}"></i>
+                            </div>
+                        </c:forEach>
+                        
+                        <c:if test="${empty listaEmblemas}">
+                            <p class="emblemas-vazio">Você ainda não desbloqueou emblemas. Continue treinando!</p>
+                        </c:if>
+
+                    </div>
+                </div>
+                <!-- 
+                ======================================================
+                == FIM DO BLOCO DE EMBLEMAS ==
+                ======================================================
+                -->
 
                 <form action="PerfilServlet" method="post" id="perfilForm">
                     <div class="form-grid">
@@ -316,7 +403,7 @@
         <nav class="bottom-nav">
             <a href="home.jsp"><i class="fas fa-home icon"></i> Home</a>
             <a href="TreinoServlet"><i class="fas fa-dumbbell icon"></i> Treino</a>
-            <a href="editarperfil.jsp" class="active"><i class="fas fa-user icon"></i> Perfil</a>
+            <a href="PerfilServlet" class="active"><i class="fas fa-user icon"></i> Perfil</a>
             <a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i> Sair</a>
         </nav>
     </div>

@@ -1,9 +1,13 @@
 package Servelet;
 
 import java.io.IOException;
+import java.util.List;
 
 import Dao.UsuarioDAO;
+import Dao.ConquistasDAO;
 import Modelos.Usuario;
+import Modelos.Conquista;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -14,26 +18,51 @@ import jakarta.servlet.http.HttpSession;
 @WebServlet("/PerfilServlet")
 public class PerfilServlet extends HttpServlet {
 
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        HttpSession session = request.getSession();
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+        if (usuario == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        try {
+            int id_usuario = usuario.getId();
+            ConquistasDAO conquistaDAO = new ConquistasDAO();
+            List<Conquista> listaEmblemas = conquistaDAO.getConquistasPorUsuario(id_usuario);
+
+            request.setAttribute("listaEmblemas", listaEmblemas);
+            request.getRequestDispatcher("editarperfil.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect("home.jsp");
+        }
+    }
+
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+            throws ServletException, IOException {
 
         HttpSession session = request.getSession();
         Usuario usuario = (Usuario) session.getAttribute("usuario");
 
         if (usuario != null) {
-          
+            
             String novoNome = request.getParameter("nome");
             String novoEmail = request.getParameter("email");
             String novaSenha = request.getParameter("senha"); 
             
-            // É importante garantir que a conversão ocorra antes de usar os valores
             int novaIdade = Integer.parseInt(request.getParameter("idade"));
             float novoPesoInicial = Float.parseFloat(request.getParameter("pesoInicial"));
             float novaAltura = Float.parseFloat(request.getParameter("altura"));
             String novoNivelInicial = request.getParameter("nivelInicial");
 
             
-            // 1. Atualiza os campos que não são a senha (eles mantêm a senha antiga do objeto 'usuario')
             usuario.setNome(novoNome);
             usuario.setEmail(novoEmail);
             usuario.setIdade(novaIdade);
@@ -41,23 +70,17 @@ public class PerfilServlet extends HttpServlet {
             usuario.setAltura(novaAltura);
             usuario.setNivelInicial(novoNivelInicial);
             
-            // 2. Atualiza a senha SOMENTE se o parâmetro 'novaSenha' não for  nem vazio.
             if (novaSenha != null && !novaSenha.trim().isEmpty()) {
                 usuario.setSenha(novaSenha);
             } 
-            // Se 'novaSenha' estiver vazia, a senha atual do objeto 'usuario' (que veio da sessão) é mantida.
 
-            // 3. Salva todas as alterações no banco de dados
             UsuarioDAO usuarioDAO = new UsuarioDAO();
             usuarioDAO.editar(usuario);
 
-            // 4. Atualiza o objeto na sessão para que os novos dados sejam refletidos imediatamente
             session.setAttribute("usuario", usuario);
             
-            // 5. Redireciona com mensagem de sucesso
-            response.sendRedirect("editarperfil.jsp?success=true");
+            response.sendRedirect("PerfilServlet?success=true");
         } else {
-            // Se não houver usuário na sessão, redireciona para o login
             response.sendRedirect("login.jsp"); 
         }
     }
