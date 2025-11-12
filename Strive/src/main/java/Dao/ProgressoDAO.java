@@ -59,17 +59,15 @@ public class ProgressoDAO {
         return lista;
     }
     
-    // MÉTODO AJUSTADO PARA USAR A TABELA SERIE
     public List<ProgressoExercicio> listarProgressoPeso(int idUsuario) {
         List<ProgressoExercicio> recordes = new ArrayList<>();
-        // A nova query junta Serie, UsuarioExercicio (para filtrar pelo usuário) e Exercicio (para obter o nome)
         String sql = "SELECT E.nome AS nomeExercicio, MAX(S.peso) AS pesoMaximo " +
                      "FROM Serie S " +
                      "JOIN UsuarioExercicio UE ON S.id_usuario_exercicio = UE.id_usuario_exercicio " +
                      "JOIN Exercicio E ON UE.id_exercicio = E.id_exercicio " +
-                     "WHERE UE.id_usuario = ? " + // Filtra pelo usuário logado
-                     "GROUP BY E.nome " +        // Agrupa por nome do exercício
-                     "ORDER BY pesoMaximo DESC"; // Ordena pelo peso máximo
+                     "WHERE UE.id_usuario = ? " + 
+                     "GROUP BY E.nome " + 
+                     "ORDER BY pesoMaximo DESC";
 
         try (Connection conn = ConexaoDB.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -77,15 +75,12 @@ public class ProgressoDAO {
             ps.setInt(1, idUsuario);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    String nome = rs.getString("nomeExercicio"); // Alias do SELECT
-                    float peso = rs.getFloat("pesoMaximo");     // Alias do SELECT
-
-                    // Assumindo que ProgressoExercicio tem um construtor (String nome, float peso)
+                    String nome = rs.getString("nomeExercicio");
+                    float peso = rs.getFloat("pesoMaximo"); 
                     recordes.add(new ProgressoExercicio(nome, peso));
                 }
             }
         } catch (SQLException e) {
-            // Logar o erro
             e.printStackTrace();
         }
         return recordes;
@@ -112,6 +107,7 @@ public class ProgressoDAO {
         }
         return historico;
     }
+
     public List<ContagemMensal> listarTreinosPorMes(int idUsuario) {
         List<ContagemMensal> contagens = new ArrayList<>();
         String sql = "SELECT YEAR(data_fim) AS ano, MONTH(data_fim) AS mes, COUNT(id_sessao) AS total_treinos FROM TreinoSessao WHERE id_usuario = ? AND data_fim IS NOT NULL GROUP BY YEAR(data_fim), MONTH(data_fim) ORDER BY ano ASC, mes ASC";
@@ -135,5 +131,43 @@ public class ProgressoDAO {
             e.printStackTrace();
         }
         return contagens;
+    }
+
+    public int getTotalTreinosConcluidos(int idUsuario) {
+        String sql = "SELECT COUNT(id_sessao) FROM TreinoSessao WHERE id_usuario = ? AND data_fim IS NOT NULL";
+        
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setInt(1, idUsuario);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int getTotalDiasUnicosDeTreino(int idUsuario) {
+        String sql = "SELECT COUNT(DISTINCT DATE(data_fim)) FROM TreinoSessao WHERE id_usuario = ? AND data_fim IS NOT NULL";
+        
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setInt(1, idUsuario);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

@@ -464,7 +464,7 @@ body {
 						Home</a></li>
 				<li><a href="TreinoServlet" class="active"><i
 						class="fas fa-dumbbell icon"></i> Treino</a></li>
-				<li><a href="editarperfil.jsp"><i class="fas fa-user icon"></i>
+				<li><a href="PerfilServlet"><i class="fas fa-user icon"></i>
 						Perfil</a></li>
 				<li><a href="SairServlet"><i
 						class="fas fa-sign-out-alt icon"></i> Sair</a></li>
@@ -547,7 +547,7 @@ body {
 			<a href="home.jsp"><i class="fas fa-home icon"></i> Home</a> <a
 				href="TreinoServlet" class="active"><i
 				class="fas fa-dumbbell icon"></i> Treino</a> <a
-				href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a>
+				href="PerfilServlet"><i class="fas fa-user icon"></i> Perfil</a>
 			<a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i>
 				Sair</a>
 		</nav>
