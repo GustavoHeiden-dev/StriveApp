@@ -129,6 +129,13 @@ body {
 	gap: 0.5rem;
 	position: relative;
 	box-shadow: var(--shadow);
+	transition: all 0.3s ease;
+}
+
+/* NOVO: Estilo para conquista concluída */
+.conquista-card.concluido {
+    border: 2px solid var(--gold-color);
+    background: #fffbef; /* Fundo mais claro/amarelado */
 }
 
 .conquista-icon {
@@ -141,6 +148,12 @@ body {
 	align-items: center;
 	justify-content: center;
 	background: #f1ebff;
+}
+
+/* NOVO: Estilo para ícone concluído */
+.conquista-card.concluido .conquista-icon {
+    color: var(--gold-color);
+    background: #ffeecc;
 }
 
 .conquista-info h3 {
@@ -177,40 +190,17 @@ body {
 	background: var(--gold-color);
 }
 
-.modal {
-	display: none;
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background: rgba(0, 0, 0, 0.5);
-	justify-content: center;
-	align-items: center;
-	z-index: 10000;
+/* NOVO: Estilo para o status "CONCLUÍDO" */
+.conquista-info .status-concluido {
+	color: var(--gold-color);
+    font-weight: 600;
+    margin-top: 0.5rem;
 }
 
-.modal-content {
-	background: #fff;
-	padding: 2rem;
-	border-radius: 12px;
-	max-width: 500px;
-	width: 90%;
-	max-height: 80%;
-	overflow-y: auto;
-	position: relative;
-}
 
-.modal h2 {
-	margin-bottom: 1rem;
-}
-
-.close-modal {
-	position: absolute;
-	top: 10px;
-	right: 10px;
-	cursor: pointer;
-	font-size: 1.2rem;
+/* MODAL REMOVIDO */
+.modal, .modal-content, .close-modal {
+	display: none !important;
 }
 
 .parabens-toast {
@@ -302,9 +292,23 @@ body {
 				<h1>Minhas Conquistas</h1>
 				<p>Veja seu progresso e as medalhas que você ganhou!</p>
 			</div>
+			
 			<div class="conquistas-grid">
 				
-				<c:forEach var="c" items="${conquistasAtivas}">
+				<c:forEach var="c" items="${conquistasConcluidas}">
+					<div class="conquista-card concluido">
+						<div class="conquista-icon">
+							<i class="${c.icone}"></i>
+						</div>
+						<div class="conquista-info">
+							<h3>${c.nome}</h3>
+							<p>${c.descricao}</p>
+							<p class="status-concluido">CONCLUÍDO</p>
+						</div>
+					</div>
+				</c:forEach>
+                
+                <c:forEach var="c" items="${conquistasAtivas}">
 					<div class="conquista-card">
 						<div class="conquista-icon">
 							<i class="${c.icone}"></i>
@@ -312,10 +316,12 @@ body {
 						<div class="conquista-info">
 							<h3>${c.nome}</h3>
 							<p>${c.descricao}</p>
+							
 							<div class="progress-bar-container">
 								<div class="progress-bar" style="width:<fmt:formatNumber value="${c.progresso}" maxFractionDigits="0"/>%"></div>
 							</div>
-							<p><fmt:formatNumber value="${c.progresso}" maxFractionDigits="0"/> %</p>
+							
+							<p>${c.progressoAtual} / ${c.meta}</p>
 						</div>
 					</div>
 				</c:forEach>
@@ -328,12 +334,6 @@ body {
 				
 			</div>
 			
-			<c:if test="${not empty conquistasConcluidas}">
-				<button id="verConquistas"
-					style="margin-top: 2rem; padding: 0.7rem 1.2rem; border: none; background: var(--primary-color); color: #fff; border-radius: 8px; cursor: pointer;">Ver
-					conquistas concluídas</button>
-			</c:if>
-			
 		</main>
 
 		<nav class="bottom-nav">
@@ -345,47 +345,14 @@ body {
 		</nav>
 	</div>
 
-	<div class="modal" id="modalConquistas">
-		<div class="modal-content">
-			<span class="close-modal" id="closeModal">&times;</span>
-			<h2>Conquistas Concluídas</h2>
-			<ul>
-				<c:forEach var="c" items="${conquistasConcluidas}">
-					<li><i class="${c.icone}"
-						style="color: var(--gold-color); margin-right: 0.5rem;"></i>${c.nome}
-						- ${c.descricao}</li>
-				</c:forEach>
-				
-				<c:if test="${empty conquistasConcluidas}">
-            		<li style="color: var(--text-muted);">Nenhuma conquista concluída ainda.</li>
-            	</c:if>
-			</ul>
-		</div>
-	</div>
-
 	<div class="parabens-toast" id="parabensToast">Parabéns!
 		Conquista concluída!</div>
 
 	<script>
-        const verBtn = document.getElementById('verConquistas');
-        const modal = document.getElementById('modalConquistas');
-        const closeModal = document.getElementById('closeModal');
         
-        if (verBtn) {
-        	verBtn.onclick = ()=> modal.style.display='flex';
-        }
-        if (closeModal) {
-        	closeModal.onclick = ()=> modal.style.display='none';
-        }
-        
-        window.onclick = e=> { 
-			if(e.target == modal) modal.style.display='none'; 
-		}
-
         window.addEventListener('load', ()=>{
             const toast = document.getElementById('parabensToast');
             
-            <%-- ESTA É A CORREÇÃO: Verifica o 'mostrarToast' que o Servlet enviou --%>
             <c:if test="${mostrarToast == 'true'}">
                 toast.style.display='block';
                 setTimeout(()=>{ toast.style.display='none'; }, 3000);

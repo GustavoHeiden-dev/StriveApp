@@ -418,10 +418,16 @@
                 display: none; /* Oculta a navegação inferior no desktop */
             }
             .progress-grid {
-                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+                /* NOVO: 3 Colunas no desktop */
+                grid-template-columns: repeat(3, 1fr); 
             }
             .progress-grid > .card.span-2 {
-                grid-column: span 2;
+                /* Mantém o card do gráfico e progresso ocupando 3 colunas */
+                grid-column: span 3;
+            }
+            /* NOVO: Histórico de Treinos ocupa 2 colunas, Recordes de Peso ocupa 1 */
+            .progress-grid > .card.historico-desktop-span-2 {
+                grid-column: span 2; 
             }
         }
     </style>
@@ -434,7 +440,7 @@
             <ul class="nav-list">
                 <li><a href="home.jsp"><i class="fas fa-home icon"></i> Home</a></li>
                 <li><a href="TreinoServlet"><i class="fas fa-dumbbell icon"></i> Treino</a></li>
-                <li><a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a></li>
+                <li><a href="PerfilServlet"><i class="fas fa-user icon"></i> Perfil</a></li>
                 <li><a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i> Sair</a></li>
             </ul>
         </aside>
@@ -521,8 +527,7 @@
                     <% } %>
                 </div>
                 
-                <div class="card">
-                    <h2>Histórico de Treinos</h2>
+                <div class="card historico-desktop-span-2"> <h2>Histórico de Treinos</h2>
                     <% 
                         final int LIMITE_EXIBICAO = 5; 
                         
@@ -572,7 +577,7 @@
         <nav class="bottom-nav">
             <a href="home.jsp"><i class="fas fa-home icon"></i> Home</a>
             <a href="TreinoServlet"><i class="fas fa-dumbbell icon"></i> Treino</a>
-            <a href="editarperfil.jsp"><i class="fas fa-user icon"></i> Perfil</a>
+            <a href="PerfilServlet"><i class="fas fa-user icon"></i> Perfil</a>
             <a href="SairServlet"><i class="fas fa-sign-out-alt icon"></i> Sair</a>
         </nav>
     </div>

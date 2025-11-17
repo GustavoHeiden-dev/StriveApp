@@ -6,15 +6,19 @@ import Utils.ConexaoDB;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ConquistasDAO {
-
+    
     public List<Conquista> getConquistasPorUsuario(int id_usuario) {
         List<Conquista> emblemas = new ArrayList<>();
-        String sql = "SELECT c.*, uc.data_conclusao FROM Conquista c " +
+        
+        // CORREÇÃO: Passando o tipo_meta do DB (c.tipo_meta)
+        String sql = "SELECT c.id_conquista, c.nome, c.descricao, c.icone, " +
+                     "c.meta_treinos AS meta, "          
+                     + "c.tipo_meta, "  // <-- Puxa o tipo_meta do banco
+                     + "uc.data_conclusao FROM Conquista c " +
                      "JOIN UsuarioConquista uc ON c.id_conquista = uc.id_conquista " +
                      "WHERE uc.id_usuario = ? " +
                      "ORDER BY uc.data_conclusao DESC";
@@ -31,8 +35,8 @@ public class ConquistasDAO {
                     c.setNome(rs.getString("nome"));
                     c.setDescricao(rs.getString("descricao"));
                     c.setIcone(rs.getString("icone"));
-                    c.setMeta(rs.getInt("meta"));
-                    c.setTipo_meta(rs.getString("tipo_meta"));
+                    c.setMeta(rs.getInt("meta")); 
+                    c.setTipo_meta(rs.getString("tipo_meta")); // <-- Puxa do DB
                     c.setData_conclusao(rs.getTimestamp("data_conclusao"));
                     emblemas.add(c);
                 }
@@ -45,7 +49,17 @@ public class ConquistasDAO {
 
     public List<Conquista> getTodasConquistas() {
         List<Conquista> conquistas = new ArrayList<>();
-        String sql = "SELECT * FROM Conquista ORDER BY meta ASC";
+        
+        // CORREÇÃO: Adicionando tipo_meta ao SELECT e removendo lógica de IDs
+        String sql = "SELECT "
+                   + "id_conquista, "
+                   + "nome, "
+                   + "descricao, "
+                   + "icone, "
+                   + "meta_treinos AS meta, "
+                   + "tipo_meta " // <-- Puxa o tipo_meta do banco
+                   + "FROM Conquista "
+                   + "ORDER BY tipo_meta, meta_treinos"; // Ordena para melhor visualização
 
         try (Connection conn = ConexaoDB.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -58,7 +72,10 @@ public class ConquistasDAO {
                 c.setDescricao(rs.getString("descricao"));
                 c.setIcone(rs.getString("icone"));
                 c.setMeta(rs.getInt("meta"));
-                c.setTipo_meta(rs.getString("tipo_meta"));
+                
+                // REMOVIDO: Lógica de ID fixo. Tipo de meta é lido do DB.
+                c.setTipo_meta(rs.getString("tipo_meta")); 
+                
                 conquistas.add(c);
             }
         } catch (Exception e) {

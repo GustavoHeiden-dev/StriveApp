@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Modelos.ContagemMensal;
-import Modelos.DetalheExercicioSerie; // NOVO: Importa o novo modelo
+import Modelos.DetalheExercicioSerie; 
 import Modelos.Progresso;
 import Modelos.ProgressoExercicio;
 import Utils.ConexaoDB;
@@ -32,7 +32,7 @@ public class ProgressoDAO {
         }
     }
     
-    // NOVO MÉTODO 1: Busca os dados básicos de uma sessão pelo ID
+    // MÉTODO 1: Busca os dados básicos de uma sessão pelo ID
     public Progresso buscarSessaoPorId(int idSessao) {
         String sql = "SELECT ts.id_sessao, t.nome AS nome_treino, ts.data_fim, ts.duracao_minutos " +
                      "FROM TreinoSessao ts " +
@@ -59,7 +59,7 @@ public class ProgressoDAO {
         return null;
     }
     
-    // NOVO MÉTODO 2: Lista todos os exercícios, repetições e pesos de todas as séries de uma sessão
+    // MÉTODO 2: Lista todos os exercícios, repetições e pesos de todas as séries de uma sessão
     public List<DetalheExercicioSerie> listarDetalhesSessao(int idSessao) {
         List<DetalheExercicioSerie> detalhes = new ArrayList<>();
         String sql = "SELECT E.nome AS nomeExercicio, S.repeticoes, S.peso " +
@@ -67,7 +67,7 @@ public class ProgressoDAO {
                      "JOIN UsuarioExercicio UE ON S.id_usuario_exercicio = UE.id_usuario_exercicio " +
                      "JOIN Exercicio E ON UE.id_exercicio = E.id_exercicio " +
                      "WHERE UE.id_sessao = ? " +
-                     "ORDER BY UE.id_usuario_exercicio ASC, S.data_registro ASC"; // Ordena para agrupar as séries de um mesmo exercício
+                     "ORDER BY UE.id_usuario_exercicio ASC, S.data_registro ASC"; 
 
         try (Connection conn = ConexaoDB.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -221,6 +221,55 @@ public class ProgressoDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    
+    /**
+     * NOVO MÉTODO: Calcula o número máximo de dias consecutivos (streak) em que o usuário treinou.
+     * Retorna 0 se não houver treinos.
+     */
+ // No seu arquivo 'ProgressoDAO.java'
+
+    public int getMaxDiasSeguidosDeTreino(int id_usuario) {
+        // Esta consulta calcula a maior sequência (streak) de dias consecutivos de treino.
+        // 1. Encontra os dias únicos de treino.
+        // 2. Calcula a diferença de dia (row_number) para identificar as sequências.
+        // 3. Agrupa por sequência e conta o número de dias em cada uma.
+        // 4. Retorna o máximo dessa contagem.
+        String sql = "WITH DiasTreino AS ("
+                + "    SELECT DISTINCT DATE(data_inicio) AS data_treino"
+                + "    FROM TreinoSessao"
+                + "    WHERE id_usuario = ?"
+                + "),"
+                + "Sequencias AS ("
+                + "    SELECT"
+                + "        data_treino,"
+                + "        DATE_SUB(data_treino, INTERVAL (ROW_NUMBER() OVER (ORDER BY data_treino)) DAY) AS grupo_sequencia"
+                + "    FROM DiasTreino"
+                + "),"
+                + "Contagem AS ("
+                + "    SELECT"
+                + "        grupo_sequencia,"
+                + "        COUNT(*) AS dias_seguidos"
+                + "    FROM Sequencias"
+                + "    GROUP BY grupo_sequencia"
+                + "    ORDER BY dias_seguidos DESC"
+                + ")"
+                + "SELECT COALESCE(MAX(dias_seguidos), 0) FROM Contagem";
+
+        try (Connection conn = ConexaoDB.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, id_usuario);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1); // Retorna a maior sequência de dias seguidos
                 }
             }
         } catch (Exception e) {
