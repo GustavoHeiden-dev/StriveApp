@@ -183,6 +183,53 @@ public class TreinoDAO {
         }
     }
 
+    // --- NOVO MÉTODO PARA DELETAR ---
+    public void deletar(int idTreino) {
+        String sqlTreinoExercicio = "DELETE FROM TreinoExercicio WHERE id_treino = ?";
+        String sqlTreino = "DELETE FROM Treino WHERE id_treino = ?";
+        
+        // Nota: Se houver registros na tabela TreinoSessao, pode ser necessário deletá-los primeiro
+        // ou garantir que o banco tenha DELETE CASCADE configurado.
+        
+        Connection con = null;
+        try {
+            con = ConexaoDB.getConnection();
+            con.setAutoCommit(false); 
+
+            // 1. Remove os vínculos de exercícios
+            try (PreparedStatement psEx = con.prepareStatement(sqlTreinoExercicio)) {
+                psEx.setInt(1, idTreino);
+                psEx.executeUpdate();
+            }
+
+            // 2. Remove o treino
+            try (PreparedStatement psTreino = con.prepareStatement(sqlTreino)) {
+                psTreino.setInt(1, idTreino);
+                psTreino.executeUpdate();
+            }
+
+            con.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (con != null) {
+                try {
+                    con.rollback();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        } finally {
+            if (con != null) {
+                try {
+                    con.setAutoCommit(true);
+                    con.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     public Treino buscarPorId(int idTreino) {
         Treino treino = null;
         String sql = "SELECT id_treino, nome, id_usuario FROM Treino WHERE id_treino = ?";

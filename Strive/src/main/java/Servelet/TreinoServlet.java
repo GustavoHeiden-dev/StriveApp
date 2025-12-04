@@ -61,6 +61,14 @@ public class TreinoServlet extends HttpServlet {
         } else if ("atualizar".equals(acao)) {
             int idTreino = Integer.parseInt(req.getParameter("idTreino"));
             treinoDao.atualizar(idTreino, nomeTreino, exerciciosIds);
+            
+        } else if ("deletar".equals(acao)) {
+            // Lógica de exclusão
+            String idTreinoStr = req.getParameter("idTreino");
+            if (idTreinoStr != null && !idTreinoStr.isEmpty()) {
+                int idTreino = Integer.parseInt(idTreinoStr);
+                treinoDao.deletar(idTreino);
+            }
         }
         
         resp.sendRedirect("TreinoServlet");
